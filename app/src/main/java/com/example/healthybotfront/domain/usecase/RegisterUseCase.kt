@@ -1,9 +1,9 @@
 package com.example.healthybotfront.domain.usecase
 
-import com.example.healthybotfront.data.repository.RegisterRestRepository
+import com.example.healthybotfront.data.repository.AuthRepository
 
 class RegisterUseCase(
-    private val registerRestRepository: RegisterRestRepository
+    private val authRepository: AuthRepository
 ) {
 
     suspend operator fun invoke(
@@ -12,6 +12,6 @@ class RegisterUseCase(
         email: String,
         password: String
     ): String {
-        return registerRestRepository.register(name, lastname, email, password)
+        return authRepository.register(name, lastname, email, password)
     }
 }

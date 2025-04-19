@@ -1,13 +1,9 @@
 package com.example.healthybotfront.di
 
-import com.example.healthybotfront.data.source.remote.api.RegisterUserClient
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import okhttp3.OkHttpClient
+import com.example.healthybotfront.data.source.remote.api.AuthApi
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 
 val retrofitModule = module {
     // API retrofit
@@ -20,5 +16,5 @@ val retrofitModule = module {
             .build()
     }
 
-    single<RegisterUserClient> { get<Retrofit>().create(RegisterUserClient::class.java) }
+    single<AuthApi> { get<Retrofit>().create(AuthApi::class.java) }
 }

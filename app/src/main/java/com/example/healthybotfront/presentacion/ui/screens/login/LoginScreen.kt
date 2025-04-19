@@ -1,138 +1,92 @@
-
 package com.example.healthybotfront.presentacion.ui.screens.login
 
-import android.annotation.SuppressLint
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.healthybotfront.presentacion.navigation.Screen
-import com.example.healthybotfront.ui.theme.HealthyBotFrontTheme
-
-
+import com.example.healthybotfront.presentacion.viewmodel.LoginViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+fun LoginScreen(
+    navController: NavController,
+    viewModel: LoginViewModel = koinViewModel()
+) {
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val loginState by viewModel.loginState.collectAsState()
+
+    // Navegación reactiva cuando el login es exitoso
+    LaunchedEffect(loginState) {
+        if (loginState.contains("Exitoso", ignoreCase = true)) {
+            val userId = loginState.split(": ").getOrNull(1)?.toLongOrNull()
+            userId?.let {
+                println("Login exitoso, navegando a Home con ID $it")
+                navController.navigate(Screen.Home.createRoute(it))
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Welcome", style = MaterialTheme.typography.titleLarge)
+        Text("Login", style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        errorMessage?.let {
-            Text(
-                text = it,
-                color = Color.Red,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        TextField(
+        OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = viewModel::setEmail,
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            )
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
+        OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = viewModel::setPassword,
             label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(onDone = {
-                errorMessage = validateLogin(email, password)
-            })
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                errorMessage = validateLogin(email, password)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Log In")
+            OutlinedButton(onClick = {
+                navController.navigate("register")
+            }) {
+                Text("Registrarse")
+            }
+
+            Button(onClick = {
+                viewModel.login()
+            }) {
+                Text("Iniciar sesión")
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = { navController.navigate(Screen.Register.route) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        ) {
-            Text(text = "Register")
+        if (loginState.isNotBlank()) {
+            Text(
+                text = loginState,
+                color = if (loginState.contains("exitoso", ignoreCase = true))
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.error
+            )
         }
     }
 }
-
-fun validateLogin(username: String, password: String): String? {
-    return if (username.isBlank() || password.isBlank()) {
-        "Please fill in both fields"
-    } else if (username != "user" || password != "pass") {
-        "Invalid credentials"
-    } else {
-        null // Login correcto
-    }
-}
-
-
-
-
