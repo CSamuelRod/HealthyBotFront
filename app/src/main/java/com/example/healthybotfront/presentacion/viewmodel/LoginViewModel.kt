@@ -17,8 +17,11 @@ class LoginViewModel(
     private val _password = MutableStateFlow("")
     val password: StateFlow<String> = _password
 
-    private val _loginState = MutableStateFlow("")
-    val loginState: StateFlow<String> = _loginState
+    private val _userId = MutableStateFlow<Long?>(null)
+    val userId: StateFlow<Long?> = _userId
+
+    private val _error = MutableStateFlow("")
+    val error: StateFlow<String> = _error
 
     fun setEmail(email: String) {
         _email.value = email
@@ -32,9 +35,9 @@ class LoginViewModel(
         viewModelScope.launch {
             try {
                 val result = loginUseCase(_email.value, _password.value)
-                _loginState.value = "Login exitoso: $result"
+                _userId.value = result.second
             } catch (e: Exception) {
-                _loginState.value = "Error: ${e.message}"
+                _error.value = "Error: ${e.message}"
             }
         }
     }

@@ -18,16 +18,13 @@ fun LoginScreen(
 ) {
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
-    val loginState by viewModel.loginState.collectAsState()
+    val userId by viewModel.userId.collectAsState()
 
-    // Navegación reactiva cuando el login es exitoso
-    LaunchedEffect(loginState) {
-        if (loginState.contains("Exitoso", ignoreCase = true)) {
-            val userId = loginState.split(": ").getOrNull(1)?.toLongOrNull()
-            userId?.let {
-                println("Login exitoso, navegando a Home con ID $it")
-                navController.navigate(Screen.Home.createRoute(it))
-            }
+    // Navega automáticamente si hay un ID válido
+    LaunchedEffect(userId) {
+        userId?.let {
+            navController.navigate(Screen.Home.createRoute(it))
+            println("Exitoso login con id : $it")
         }
     }
 
@@ -38,7 +35,6 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text("Login", style = MaterialTheme.typography.headlineMedium)
-
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
@@ -64,9 +60,8 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            OutlinedButton(onClick = {
-                navController.navigate("register")
-            }) {
+            OutlinedButton( onClick = { navController.navigate(Screen.Register.route) }
+            ) {
                 Text("Registrarse")
             }
 
@@ -75,18 +70,6 @@ fun LoginScreen(
             }) {
                 Text("Iniciar sesión")
             }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (loginState.isNotBlank()) {
-            Text(
-                text = loginState,
-                color = if (loginState.contains("exitoso", ignoreCase = true))
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.error
-            )
         }
     }
 }

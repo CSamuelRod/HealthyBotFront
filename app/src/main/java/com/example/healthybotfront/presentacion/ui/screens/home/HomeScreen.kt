@@ -9,11 +9,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 
 @Composable
 fun HomeScreen(
-    navController: NavHostController,
+    navController: NavController,
     userId: Long
 ) {
     // Guardamos el userId en una variable de estado (opcional si solo lo mostramos)
