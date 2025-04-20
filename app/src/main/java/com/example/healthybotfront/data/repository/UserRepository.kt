@@ -3,7 +3,9 @@ package com.example.healthybotfront.data.repository
 import com.example.healthybotfront.data.source.remote.api.UserApi
 import com.example.healthybotfront.data.source.remote.dto.UserDto
 
-class UserRepository(private val api: UserApi) {
+class UserRepository(
+    private val api: UserApi
+) {
 
     suspend fun getUser(userId: Long): UserDto = api.getUserById(userId)
 

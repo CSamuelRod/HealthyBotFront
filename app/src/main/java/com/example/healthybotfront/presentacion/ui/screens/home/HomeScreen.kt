@@ -11,23 +11,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.healthybotfront.presentacion.navigation.Screen
+import com.example.healthybotfront.presentacion.viewmodel.HabitViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    userId: Long
+    userId: Long,
+    habitViewModel: HabitViewModel = koinViewModel()
 ) {
-    // Guardamos el userId en una variable de estado (opcional si solo lo mostramos)
-    val currentUserId = remember { userId }
+    val habits by habitViewModel.habits.collectAsState()
+    val error by habitViewModel.errorMessage.collectAsState()
 
-    var tasks by remember {
-        mutableStateOf(
-            listOf(
-                Task("Hacer ejercicio", false),
-                Task("Tomar agua", true),
-                Task("Leer 10 minutos", false)
-            )
-        )
+    // Cargar hábitos solo una vez
+    LaunchedEffect(userId) {
+        habitViewModel.getHabits(userId)
     }
 
     Scaffold(
@@ -37,10 +35,8 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                // Botón de perfil en la esquina superior derecha
                 IconButton(
                     onClick = {
-                        // Navegar a la pantalla de perfil con el userId
                         navController.navigate(Screen.Profile.createRoute(userId))
                     },
                     modifier = Modifier.align(Alignment.TopEnd)
@@ -60,7 +56,10 @@ fun HomeScreen(
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = { /* Acción para añadir */ }) {
+                IconButton(onClick = {
+                    // Aquí puedes navegar a una pantalla para crear hábito
+                    // navController.navigate(Screen.CreateHabit.createRoute(userId))
+                }) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Agregar"
@@ -80,22 +79,35 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Bienvenido, usuario ID: $currentUserId",
+                text = "Bienvenido, usuario ID: $userId",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 16.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Lunes",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
+            if (error != null) {
+                Text(text = "Error: $error", color = MaterialTheme.colorScheme.error)
+            }
 
-            // Aquí podrías mapear tareas o cualquier otra info
+            habits.forEach { habit ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Checkbox(
+                        checked = false, // Podrías enlazar con el progreso
+                        onCheckedChange = { /* lógica para marcar como completado */ }
+                    )
+                    Text(
+                        text = habit.name,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
         }
     }
 }
-
-data class Task(val name: String, val done: Boolean)
