@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.healthybotfront.presentacion.navigation.Screen
 import com.example.healthybotfront.presentacion.viewmodel.RegisterViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -96,7 +97,10 @@ fun RegisterScreen(
             }
 
             Button(
-                onClick = { viewModel.register() }
+                onClick = { viewModel.register()
+                            navController.navigate(
+                                Screen.Login.route
+                            )}
             ) {
                 Text("Guardar")
             }

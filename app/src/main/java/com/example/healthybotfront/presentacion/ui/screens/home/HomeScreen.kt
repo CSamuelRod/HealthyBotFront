@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.healthybotfront.presentacion.navigation.Screen
 
 @Composable
 fun HomeScreen(
@@ -36,13 +37,20 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Perfil",
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .size(32.dp)
-                )
+                // Botón de perfil en la esquina superior derecha
+                IconButton(
+                    onClick = {
+                        // Navegar a la pantalla de perfil con el userId
+                        navController.navigate(Screen.Profile.createRoute(userId))
+                    },
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Perfil",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
         },
         bottomBar = {

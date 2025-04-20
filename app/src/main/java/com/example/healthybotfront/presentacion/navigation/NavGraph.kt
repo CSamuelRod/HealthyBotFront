@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.healthybotfront.presentacion.ui.screens.login.LoginScreen
 import com.example.healthybotfront.presentacion.ui.screens.home.HomeScreen // Asegúrate de tener esta pantalla
+import com.example.healthybotfront.presentacion.ui.screens.profile.ProfileScreen
 import com.example.healthybotfront.presentation.register.RegisterScreen
 
 
@@ -31,7 +32,13 @@ fun NavGraph(startDestination: String = Screen.Login.route) {
             HomeScreen(navController, userId)
         }
 
-
+        composable(
+            route = Screen.Profile.route,
+            arguments = listOf(navArgument("userId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getLong("userId") ?: 0L
+            ProfileScreen(navController, userId)
+        }
         // Ruta para Registro
         composable(Screen.Register.route) {
             RegisterScreen(navController)

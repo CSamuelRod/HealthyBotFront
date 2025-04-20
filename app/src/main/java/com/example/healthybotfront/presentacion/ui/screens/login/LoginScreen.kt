@@ -23,8 +23,8 @@ fun LoginScreen(
     // Navega automáticamente si hay un ID válido
     LaunchedEffect(userId) {
         userId?.let {
-            navController.navigate(Screen.Home.createRoute(it))
             println("Exitoso login con id : $it")
+            navController.navigate(Screen.Home.createRoute(it))
         }
     }
 
