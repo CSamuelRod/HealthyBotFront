@@ -1,5 +1,7 @@
 package com.example.healthybotfront.presentacion.ui.screens.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -13,7 +15,11 @@ import androidx.navigation.NavController
 import com.example.healthybotfront.presentacion.navigation.Screen
 import com.example.healthybotfront.presentacion.viewmodel.HabitViewModel
 import org.koin.androidx.compose.koinViewModel
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.*
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -22,6 +28,14 @@ fun HomeScreen(
 ) {
     val habits by habitViewModel.habits.collectAsState()
     val error by habitViewModel.errorMessage.collectAsState()
+
+    val currentDayName = remember {
+        LocalDate.now()
+            .dayOfWeek
+            .getDisplayName(TextStyle.FULL, Locale("es"))
+            .replaceFirstChar { it.uppercaseChar() }
+    }
+
 
     // Cargar hábitos solo una vez
     LaunchedEffect(userId) {
@@ -58,7 +72,7 @@ fun HomeScreen(
             ) {
                 IconButton(onClick = {
                     // Aquí puedes navegar a una pantalla para crear hábito
-                    // navController.navigate(Screen.CreateHabit.createRoute(userId))
+                    navController.navigate(Screen.CreateHabit.createRoute(userId))
                 }) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -83,6 +97,16 @@ fun HomeScreen(
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 16.dp)
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = currentDayName,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Spacer(modifier = Modifier.height(16.dp))
 

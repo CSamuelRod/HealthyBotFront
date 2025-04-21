@@ -62,6 +62,17 @@ fun ProfileScreen(
                 }) {
                     Text("Eliminar cuenta", color = MaterialTheme.colorScheme.error)
                 }
+                Button(onClick = {
+                    navController.popBackStack();
+                }) {
+                    Text("Editar informacion")
+                }
+
+                Button(onClick = {
+                    navController.popBackStack();
+                }) {
+                    Text("Volver atras")
+                }
             }
         }
     }

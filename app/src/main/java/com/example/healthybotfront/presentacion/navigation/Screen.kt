@@ -9,5 +9,9 @@ sealed class Screen(val route: String) {
     }
     object Login : Screen("login")
     object Register : Screen("register")
+
+    object CreateHabit: Screen("createHabit/{userId}") {
+        fun createRoute(userId: Long) = "createHabit/$userId"
+    }
 }
 
