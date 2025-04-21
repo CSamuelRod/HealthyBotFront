@@ -19,15 +19,21 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
 
+import com.example.healthybotfront.presentacion.viewmodel.ProfileViewModel
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     navController: NavController,
     userId: Long,
-    habitViewModel: HabitViewModel = koinViewModel()
+    habitViewModel: HabitViewModel = koinViewModel(),
+    profileViewModel: ProfileViewModel = koinViewModel()
 ) {
+
     val habits by habitViewModel.habits.collectAsState()
     val error by habitViewModel.errorMessage.collectAsState()
+    val checkStates = remember { mutableStateMapOf<Long, Boolean>() }
+    val user by profileViewModel.user.collectAsState()
 
     val currentDayName = remember {
         LocalDate.now()
@@ -40,7 +46,9 @@ fun HomeScreen(
     // Cargar hábitos solo una vez
     LaunchedEffect(userId) {
         habitViewModel.getHabits(userId)
+        profileViewModel.loadUser(userId)
     }
+
 
     Scaffold(
         topBar = {
@@ -93,8 +101,8 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Bienvenido, usuario ID: $userId",
-                style = MaterialTheme.typography.bodyLarge,
+                text = "Hola, ${user?.name ?: "usuario"} 👋",
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(top = 16.dp)
             )
 
@@ -115,6 +123,8 @@ fun HomeScreen(
             }
 
             habits.forEach { habit ->
+                val isChecked = checkStates[habit.hashCode().toLong()] ?: false
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -122,8 +132,11 @@ fun HomeScreen(
                         .padding(vertical = 8.dp)
                 ) {
                     Checkbox(
-                        checked = false, // Podrías enlazar con el progreso
-                        onCheckedChange = { /* lógica para marcar como completado */ }
+                        checked = isChecked,
+                        onCheckedChange = {
+                            checkStates[habit.hashCode().toLong()] = it
+                            println("Hábito '${habit.name}' marcado como completado: $it")
+                        }
                     )
                     Text(
                         text = habit.name,
@@ -132,6 +145,7 @@ fun HomeScreen(
                     )
                 }
             }
+
         }
     }
 }
