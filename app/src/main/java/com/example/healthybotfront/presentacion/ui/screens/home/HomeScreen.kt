@@ -3,6 +3,8 @@ package com.example.healthybotfront.presentacion.ui.screens.home
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
@@ -18,7 +20,6 @@ import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
-
 import com.example.healthybotfront.presentacion.viewmodel.ProfileViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -29,7 +30,6 @@ fun HomeScreen(
     habitViewModel: HabitViewModel = koinViewModel(),
     profileViewModel: ProfileViewModel = koinViewModel()
 ) {
-
     val habits by habitViewModel.habits.collectAsState()
     val error by habitViewModel.errorMessage.collectAsState()
     val checkStates = remember { mutableStateMapOf<Long, Boolean>() }
@@ -42,13 +42,10 @@ fun HomeScreen(
             .replaceFirstChar { it.uppercaseChar() }
     }
 
-
-    // Cargar hábitos solo una vez
     LaunchedEffect(userId) {
         habitViewModel.getHabits(userId)
         profileViewModel.loadUser(userId)
     }
-
 
     Scaffold(
         topBar = {
@@ -79,7 +76,6 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 IconButton(onClick = {
-                    // Aquí puedes navegar a una pantalla para crear hábito
                     navController.navigate(Screen.CreateHabit.createRoute(userId))
                 }) {
                     Icon(
@@ -97,6 +93,7 @@ fun HomeScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())  // Habilitamos el scroll
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -114,8 +111,6 @@ fun HomeScreen(
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
             Spacer(modifier = Modifier.height(16.dp))
 
             if (error != null) {
@@ -129,8 +124,22 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    Column(
+                        modifier = Modifier.weight(1f) // Ocupar todo el espacio disponible
+                    ) {
+                        Text(
+                            text = habit.name,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            text = habit.description,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     Checkbox(
                         checked = isChecked,
                         onCheckedChange = {
@@ -138,14 +147,8 @@ fun HomeScreen(
                             println("Hábito '${habit.name}' marcado como completado: $it")
                         }
                     )
-                    Text(
-                        text = habit.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
                 }
             }
-
         }
     }
 }

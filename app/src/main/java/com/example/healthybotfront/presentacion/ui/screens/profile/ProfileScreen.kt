@@ -1,6 +1,8 @@
 package com.example.healthybotfront.presentacion.ui.screens.profile
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,6 +13,7 @@ import com.example.healthybotfront.presentacion.navigation.Screen
 import com.example.healthybotfront.presentacion.viewmodel.ProfileViewModel
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
@@ -25,53 +28,77 @@ fun ProfileScreen(
         viewModel.loadUser(userId)
     }
 
-    // Si está cargando, muestra el indicador de carga
-    if (isLoading) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Profile") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(onClick = {
+                    // Acción de editar información
+                    navController.navigate("edit_profile/$userId")
+                }) {
+                    Text("Editar información")
+                }
+                OutlinedButton(
+                    onClick = {
+                        viewModel.deleteUser(userId) {
+                            navController.navigate(Screen.Login.route)
+                        }
+                    },
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Eliminar cuenta")
+                }
+            }
+        }
+    ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator()
-        }
-    } else {
-        // Si hay un mensaje de error, muéstralo
-        errorMessage?.let {
-            Text(text = it, color = MaterialTheme.colorScheme.error)
-        }
+            when {
+                isLoading -> {
+                    CircularProgressIndicator()
+                }
+                errorMessage != null -> {
+                    Text(
+                        text = errorMessage ?: "",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+                user != null -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Perfil de usuario", style = MaterialTheme.typography.headlineMedium)
+                        Spacer(modifier = Modifier.height(16.dp))
 
-        // Si hay información del usuario, muéstrala
-        user?.let { currentUser ->
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Perfil de usuario", style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Mostrar información del usuario
-                Text("Nombre: ${currentUser.name}")
-                Text("Apellido: ${currentUser.lastName}")
-                Text("Email: ${currentUser.email}")
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Botón para eliminar cuenta
-                OutlinedButton(onClick = {
-                    viewModel.deleteUser(userId) {
-                        navController.navigate(Screen.Login.route){
-                            popUpTo("profile/$userId") { inclusive = true }
-                        }
+                        Text("Nombre: ${user!!.name}")
+                        Text("Apellido: ${user!!.lastName}")
+                        Text("Email: ${user!!.email}")
                     }
-                }) {
-                    Text("Eliminar cuenta", color = MaterialTheme.colorScheme.error)
-                }
-                Button(onClick = {
-                    navController.popBackStack();
-                }) {
-                    Text("Editar informacion")
-                }
-
-                Button(onClick = {
-                    navController.popBackStack();
-                }) {
-                    Text("Volver atras")
                 }
             }
         }
