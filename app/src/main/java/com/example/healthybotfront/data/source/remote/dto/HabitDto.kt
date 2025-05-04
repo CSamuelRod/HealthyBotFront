@@ -2,6 +2,7 @@ package com.example.healthybotfront.data.source.remote.dto
 
 
 data class HabitDto(
+    val habitId: Long? = null, // ← nuevo campo opcional
     val name: String,
     val description: String,
     val isCustom: Boolean = true,

@@ -7,6 +7,6 @@ data class GoalDto(
     val habit_id: Long,
     val objective: String,
     val frequency: String, // Puedes usar enum si mapeas correctamente
-    val startDate: LocalDate,
-    val endDate: LocalDate
+    val startDate: String,
+    val endDate: String
 )

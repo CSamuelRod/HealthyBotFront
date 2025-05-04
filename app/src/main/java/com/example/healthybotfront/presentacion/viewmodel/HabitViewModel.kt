@@ -30,15 +30,16 @@ class HabitViewModel(
         }
     }
 
-    fun createHabit(habit: HabitDto, onSuccess: () -> Unit) {
+    fun createHabit(habitDto: HabitDto, onResult: (HabitDto) -> Unit) {
         viewModelScope.launch {
             try {
-                createHabitUseCase(habit)
-                onSuccess()
-                getHabits(habit.userId)
+                val createdHabit = createHabitUseCase.invoke(habitDto)
+                onResult(createdHabit)
             } catch (e: Exception) {
-                _errorMessage.value = "Error al crear hábito"
+                _errorMessage.value = "Error al crear hábito: ${e.message}"
             }
         }
     }
+
+
 }

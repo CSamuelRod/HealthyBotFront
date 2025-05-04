@@ -4,13 +4,13 @@ import com.example.healthybotfront.data.source.remote.api.UserApi
 import com.example.healthybotfront.data.source.remote.dto.UserDto
 
 class UserRepository(
-    private val api: UserApi
+    private val userApi: UserApi
 ) {
 
-    suspend fun getUser(userId: Long): UserDto = api.getUserById(userId)
+    suspend fun getUser(userId: Long): UserDto = userApi.getUserById(userId)
 
     suspend fun updateUser(userId: Long, userDto: UserDto): UserDto =
-        api.updateUser(userId, userDto)
+        userApi.updateUser(userId, userDto)
 
-    suspend fun deleteUser(userId: Long) = api.deleteUser(userId)
+    suspend fun deleteUser(userId: Long) = userApi.deleteUser(userId)
 }
