@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.healthybotfront.presentacion.navigation.Screen
@@ -31,7 +32,14 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile") },
+                title = {
+                    Text(
+                        text = "Perfil de Usuario",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
@@ -47,25 +55,29 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(onClick = {
-                    // Acción de editar información
-                    navController.navigate("edit_profile/$userId")
-                }) {
-                    Text("Editar información")
+                Button(
+                    onClick = { navController.navigate("edit_profile/$userId") },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Editar")
                 }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
                 OutlinedButton(
                     onClick = {
                         viewModel.deleteUser(userId) {
                             navController.navigate(Screen.Login.route)
                         }
                     },
+                    modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("Eliminar cuenta")
+                    Text("Eliminar")
                 }
             }
         }
@@ -73,8 +85,9 @@ fun ProfileScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
+                .padding(innerPadding)
+                .padding(horizontal = 24.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
             when {
                 isLoading -> {
@@ -83,21 +96,32 @@ fun ProfileScreen(
                 errorMessage != null -> {
                     Text(
                         text = errorMessage ?: "",
-                        color = MaterialTheme.colorScheme.error
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
                 user != null -> {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 48.dp)
                     ) {
-                        Text("Perfil de usuario", style = MaterialTheme.typography.headlineMedium)
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = user!!.name,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
 
-                        Text("Nombre: ${user!!.name}")
-                        Text("Apellido: ${user!!.lastName}")
-                        Text("Email: ${user!!.email}")
+                        Text(
+                            text = user!!.lastName,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Text(
+                            text = user!!.email,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
                     }
                 }
             }

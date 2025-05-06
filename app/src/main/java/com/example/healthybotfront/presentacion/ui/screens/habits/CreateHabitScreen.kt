@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.healthybotfront.data.source.remote.dto.GoalDto
 import com.example.healthybotfront.data.source.remote.dto.HabitDto
+import com.example.healthybotfront.presentacion.ui.components.TopBarWithProfile
 import com.example.healthybotfront.presentacion.viewmodel.GoalViewModel
 import com.example.healthybotfront.presentacion.viewmodel.HabitViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -48,13 +49,10 @@ fun CreateHabitScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Nuevo Hábito + Meta") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
-                    }
-                }
+            TopBarWithProfile(
+                navController = navController,
+                userId = userId,
+                title = "Nuevo Hábito + Meta"
             )
         }
     ) { paddingValues ->

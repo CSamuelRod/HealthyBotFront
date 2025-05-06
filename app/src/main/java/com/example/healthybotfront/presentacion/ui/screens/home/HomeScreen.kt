@@ -52,7 +52,7 @@ fun HomeScreen(
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .statusBarsPadding()
             ) {
                 IconButton(
                     onClick = {
@@ -83,8 +83,11 @@ fun HomeScreen(
                         contentDescription = "Agregar"
                     )
                 }
-                TextButton(onClick = { /* Acción para logros */ }) {
-                    Text("Logros")
+                TextButton(onClick = {
+                    navController.navigate(Screen.Progress.createRoute(userId))
+
+                }) {
+                    Text("Progreso")
                 }
             }
         }
