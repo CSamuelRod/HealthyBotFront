@@ -6,6 +6,6 @@ import retrofit2.http.POST
 
 interface ProgressApi {
         @POST("/progress")
-        suspend fun saveProgress(@Body progress: ProgressDto): ProgressDto
+        suspend fun saveProgress(@Body progress: ProgressDto):ProgressDto
 
 }

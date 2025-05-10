@@ -1,8 +1,7 @@
 package com.example.healthybotfront.data.source.remote.dto
 
-import java.time.LocalDate
-
 data class GoalDto(
+    val goalId: Long?, // 👈 ahora disponible
     val user_id: Long,
     val habit_id: Long,
     val objective: String,

@@ -162,6 +162,7 @@ fun CreateHabitScreen(
 
                             // Asegúrate de que `createdHabit.habitId` esté disponible y sea correcto
                             val goal = GoalDto(
+                                goalId = null,
                                 user_id = userId,
                                 habit_id = createdHabit.habitId!!, // Ahora usas `habitId` que se espera
                                 objective = objective,

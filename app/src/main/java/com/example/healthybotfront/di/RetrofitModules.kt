@@ -3,6 +3,7 @@ package com.example.healthybotfront.di
 import com.example.healthybotfront.data.source.remote.api.AuthApi
 import com.example.healthybotfront.data.source.remote.api.GoalApi
 import com.example.healthybotfront.data.source.remote.api.HabitApi
+import com.example.healthybotfront.data.source.remote.api.ProgressApi
 import com.example.healthybotfront.data.source.remote.api.UserApi
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -23,4 +24,5 @@ val retrofitModule = module {
     single<UserApi> { get<Retrofit>().create(UserApi::class.java) }
     single<HabitApi> { get<Retrofit>().create(HabitApi::class.java) }
     single<GoalApi> { get<Retrofit>().create(GoalApi::class.java) }
+    single<ProgressApi> { get<Retrofit>().create(ProgressApi::class.java) }
 }

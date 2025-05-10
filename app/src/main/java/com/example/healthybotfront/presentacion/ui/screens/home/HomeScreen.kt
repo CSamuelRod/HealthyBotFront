@@ -21,18 +21,21 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
 import com.example.healthybotfront.presentacion.viewmodel.ProfileViewModel
-
+import com.example.healthybotfront.presentacion.viewmodel.ProgressViewModel
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     navController: NavController,
     userId: Long,
     habitViewModel: HabitViewModel = koinViewModel(),
-    profileViewModel: ProfileViewModel = koinViewModel()
+    profileViewModel: ProfileViewModel = koinViewModel(),
+    progressViewModel: ProgressViewModel = koinViewModel()
 ) {
     val habits by habitViewModel.habits.collectAsState()
     val error by habitViewModel.errorMessage.collectAsState()
     val checkStates = remember { mutableStateMapOf<Long, Boolean>() }
+    val notesMap = remember { mutableStateMapOf<Long, String>() }
+    val showControlsMap = remember { mutableStateMapOf<Long, Boolean>() }
     val user by profileViewModel.user.collectAsState()
 
     val currentDayName = remember {
@@ -85,7 +88,6 @@ fun HomeScreen(
                 }
                 TextButton(onClick = {
                     navController.navigate(Screen.Progress.createRoute(userId))
-
                 }) {
                     Text("Progreso")
                 }
@@ -96,7 +98,7 @@ fun HomeScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())  // Habilitamos el scroll
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -119,37 +121,87 @@ fun HomeScreen(
             if (error != null) {
                 Text(text = "Error: $error", color = MaterialTheme.colorScheme.error)
             }
-
             habits.forEach { habit ->
-                val isChecked = checkStates[habit.hashCode().toLong()] ?: false
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                val habitId = habit.habitId!!
+                val isChecked = checkStates[habitId] ?: false
+                val note = notesMap[habitId] ?: ""
+                val showControls = showControlsMap[habitId] ?: false
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(vertical = 8.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.weight(1f) // Ocupar todo el espacio disponible
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = habit.name,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text(
-                            text = habit.description,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = habit.name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = habit.description,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Checkbox(
+                            checked = isChecked,
+                            onCheckedChange = { checked ->
+                                checkStates[habitId] = checked
+                                showControlsMap[habitId] = checked
+
+                                if (!checked) {
+                                    println("se ha desmarcado el habit ${habit.habitId}")
+                                }
+                            }
                         )
                     }
-                    Checkbox(
-                        checked = isChecked,
-                        onCheckedChange = {
-                            checkStates[habit.hashCode().toLong()] = it
-                            println("Hábito '${habit.name}' marcado como completado: $it")
+
+                    if (showControls) {
+                        OutlinedTextField(
+                            value = note,
+                            onValueChange = { notesMap[habitId] = it },
+                            label = { Text("Nota (opcional)") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp)
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                        ) {
+                            TextButton(onClick = {
+                                progressViewModel.saveProgress(
+                                    habitId = habitId,
+                                    completed = true,
+                                    notes = null,
+                                    onError = { println(it) }
+                                )
+                                showControlsMap[habitId] = false
+                                notesMap[habitId] = ""
+                            }) {
+                                Text("Cancelar")
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Button(onClick = {
+                                progressViewModel.saveProgress(
+                                    habitId = habitId,
+                                    completed = true,
+                                    notes = note.takeIf { it.isNotBlank() },
+                                    onError = { println(it) }
+                                )
+                                showControlsMap[habitId] = false
+                                notesMap[habitId] = ""
+                            }) {
+                                Text("Guardar")
+                            }
                         }
-                    )
+                    }
                 }
             }
         }
