@@ -9,4 +9,8 @@ class ProgressRepository(
     suspend fun saveProgress(progressDto: ProgressDto) : ProgressDto{
         return progressApi.saveProgress(progressDto)
     }
+
+    suspend fun getProgressListByHabitId(id :Long) : List<ProgressDto>{
+        return progressApi.getProgressListByHabitId(id)
+    }
 }

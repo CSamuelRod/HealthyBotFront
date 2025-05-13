@@ -59,7 +59,7 @@ fun NavGraph(startDestination: String = Screen.Login.route) {
             arguments = listOf(navArgument("userId") { type = NavType.LongType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getLong("userId") ?: 0L
-            ProgressScreen(navController, userId)
+            ProgressScreen(navController,userId)
         }
 
     }

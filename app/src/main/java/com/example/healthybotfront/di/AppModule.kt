@@ -12,12 +12,14 @@ import com.example.healthybotfront.domain.usecase.DeleteGoalUseCase
 import com.example.healthybotfront.domain.usecase.DeleteUserUseCase
 import com.example.healthybotfront.domain.usecase.GetGoalByHabitIdUseCase
 import com.example.healthybotfront.domain.usecase.GetHabitsByUserIdUseCase
+import com.example.healthybotfront.domain.usecase.GetProgressByHabitIdUseCase
 import com.example.healthybotfront.domain.usecase.GetUserUseCase
 import com.example.healthybotfront.domain.usecase.LoginUseCase
 import com.example.healthybotfront.domain.usecase.RegisterUseCase
 import com.example.healthybotfront.domain.usecase.SaveProgressUseCase
 import com.example.healthybotfront.domain.usecase.UpdateGoalUseCase
 import com.example.healthybotfront.domain.usecase.UpdateUserUseCase
+import com.example.healthybotfront.presentacion.viewmodel.GetProgressViewModel
 import com.example.healthybotfront.presentacion.viewmodel.GoalViewModel
 import com.example.healthybotfront.presentacion.viewmodel.HabitViewModel
 import com.example.healthybotfront.presentacion.viewmodel.LoginViewModel
@@ -48,6 +50,7 @@ val appModule = module {
     factory { CreateGoalUseCase(get()) }
     factory { UpdateGoalUseCase(get()) }
     factory { DeleteGoalUseCase(get()) }
+    factory { GetProgressByHabitIdUseCase(get()) }
 
 
     factory { SaveProgressUseCase(get()) }
@@ -60,4 +63,5 @@ val appModule = module {
     viewModel { GoalViewModel(get(),get(),get(),get()) }
 
     viewModel{ProgressViewModel(get(),get())}
+    viewModel{GetProgressViewModel(get(),get())}
 }
