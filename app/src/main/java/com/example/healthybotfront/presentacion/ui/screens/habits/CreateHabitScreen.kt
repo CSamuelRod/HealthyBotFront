@@ -4,12 +4,12 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -36,11 +36,9 @@ fun CreateHabitScreen(
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
 
-    // Meta (Goal) states
     var objective by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
 
-    // Frecuencia con Dropdown
     val frequencyOptions = listOf("DAILY", "WEEKLY", "MONTHLY")
     var selectedFrequency by remember { mutableStateOf(frequencyOptions[0]) }
     var expanded by remember { mutableStateOf(false) }
@@ -48,6 +46,7 @@ fun CreateHabitScreen(
     var showError by remember { mutableStateOf(false) }
 
     Scaffold(
+        containerColor = Color(0xFFE8F5E9), // Fondo pastel
         topBar = {
             TopBarWithProfile(
                 navController = navController,
@@ -56,133 +55,146 @@ fun CreateHabitScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
-                .padding(paddingValues)
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
+                .padding(24.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
-            // ---------- HÁBITO ----------
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Nombre del hábito") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // -------- Hábito --------
+                    Text("Nuevo Hábito", style = MaterialTheme.typography.headlineSmall)
 
-            Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Nombre del hábito") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Descripción") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 4
-            )
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text("Descripción") },
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 4
+                    )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                    Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-            // ---------- META ----------
-            Text("Meta asociada", style = MaterialTheme.typography.titleMedium)
+                    // -------- Meta --------
+                    Text("Meta Asociada", style = MaterialTheme.typography.titleMedium)
 
-            OutlinedTextField(
-                value = objective,
-                onValueChange = { objective = it },
-                label = { Text("Objetivo de la meta") },
-                modifier = Modifier.fillMaxWidth()
-            )
+                    OutlinedTextField(
+                        value = objective,
+                        onValueChange = { objective = it },
+                        label = { Text("Objetivo de la meta") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                    // Frecuencia con Dropdown
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded }
+                    ) {
+                        OutlinedTextField(
+                            value = selectedFrequency,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Frecuencia") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
+                        )
 
-            Text("Frecuencia")
-            Box(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = selectedFrequency,
-                    onValueChange = {},
-                    readOnly = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Frecuencia") },
-                    trailingIcon = {
-                        IconButton(onClick = { expanded = !expanded }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = null)
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            frequencyOptions.forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text(option) },
+                                    onClick = {
+                                        selectedFrequency = option
+                                        expanded = false
+                                    }
+                                )
+                            }
                         }
                     }
-                )
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    frequencyOptions.forEach { option ->
-                        DropdownMenuItem(
-                            text = { Text(option) },
-                            onClick = {
-                                selectedFrequency = option
-                                expanded = false
-                            }
+
+                    OutlinedTextField(
+                        value = endDate,
+                        onValueChange = { endDate = it },
+                        label = { Text("Fecha fin (YYYY-MM-DD)") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    if (showError || errorMessage != null) {
+                        Text(
+                            text = errorMessage ?: "Completa todos los campos correctamente.",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium
                         )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            if (name.isNotBlank() && description.isNotBlank()
+                                && objective.isNotBlank() && endDate.isNotBlank()
+                            ) {
+                                val habit = HabitDto(
+                                    name = name,
+                                    description = description,
+                                    isCustom = true,
+                                    userId = userId
+                                )
+
+                                habitViewModel.createHabit(habit) { createdHabit ->
+                                    val goal = GoalDto(
+                                        goalId = null,
+                                        user_id = userId,
+                                        habit_id = createdHabit.habitId!!,
+                                        objective = objective,
+                                        frequency = selectedFrequency,
+                                        startDate = LocalDate.now().toString(),
+                                        endDate = endDate
+                                    )
+
+                                    goalViewModel.create(goal)
+                                    Toast.makeText(context, "Hábito y meta creados correctamente", Toast.LENGTH_SHORT).show()
+                                    navController.popBackStack()
+                                }
+                            } else {
+                                showError = true
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF81C784))
+                    ) {
+                        Text("Guardar hábito y meta", color = Color.White)
                     }
                 }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = endDate,
-                onValueChange = { endDate = it },
-                label = { Text("Fecha fin (YYYY-MM-DD)") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            if (showError || errorMessage != null) {
-                Text(
-                    text = errorMessage ?: "Completa todos los campos correctamente.",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-
-            Button(
-                onClick = {
-                    if (name.isNotBlank() && description.isNotBlank() &&
-                        objective.isNotBlank() && endDate.isNotBlank()
-                    ) {
-                        val habit = HabitDto(
-                            name = name,
-                            description = description,
-                            isCustom = true,
-                            userId = userId
-                        )
-
-                        habitViewModel.createHabit(habit) { createdHabit ->
-                            println("Habit creado con ID: ${createdHabit.habitId}")
-
-                            // Asegúrate de que `createdHabit.habitId` esté disponible y sea correcto
-                            val goal = GoalDto(
-                                goalId = null,
-                                user_id = userId,
-                                habit_id = createdHabit.habitId!!, // Ahora usas `habitId` que se espera
-                                objective = objective,
-                                frequency = selectedFrequency,
-                                startDate = LocalDate.now().toString(),
-                                endDate = endDate
-                            )
-
-                            goalViewModel.create(goal)
-
-                            Toast.makeText(context, "Hábito y meta creados correctamente", Toast.LENGTH_SHORT).show()
-                            navController.popBackStack()
-                        }
-                    } else {
-                        showError = true
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Guardar hábito y meta")
             }
         }
     }

@@ -1,12 +1,14 @@
 package com.example.healthybotfront.presentacion.ui.screens.profile
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -30,6 +32,7 @@ fun ProfileScreen(
     }
 
     Scaffold(
+        containerColor = Color(0xFFF1F8E9), // Fondo claro pastel
         topBar = {
             TopAppBar(
                 title = {
@@ -59,9 +62,10 @@ fun ProfileScreen(
             ) {
                 Button(
                     onClick = { navController.navigate("edit_profile/$userId") },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC8E6C9))
                 ) {
-                    Text("Editar")
+                    Text("Editar", color = Color.Black)
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -74,7 +78,8 @@ fun ProfileScreen(
                     },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
+                        containerColor = Color(0xFFFFCDD2),
+                        contentColor = Color.Black
                     )
                 ) {
                     Text("Eliminar")
@@ -86,7 +91,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp),
+                .padding(24.dp),
             contentAlignment = Alignment.TopCenter
         ) {
             when {
@@ -101,27 +106,37 @@ fun ProfileScreen(
                     )
                 }
                 user != null -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 48.dp)
+                            .wrapContentHeight(),
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = CardDefaults.cardElevation(6.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                        Text(
-                            text = user!!.name,
-                            style = MaterialTheme.typography.headlineMedium
-                        )
+                        Column(
+                            modifier = Modifier
+                                .padding(24.dp)
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = user!!.name,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
 
-                        Text(
-                            text = user!!.lastName,
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                            Text(
+                                text = user!!.lastName,
+                                style = MaterialTheme.typography.titleMedium
+                            )
 
-                        Text(
-                            text = user!!.email,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                            Text(
+                                text = user!!.email,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
                     }
                 }
             }

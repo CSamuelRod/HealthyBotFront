@@ -2,8 +2,11 @@ package com.example.healthybotfront.presentacion.ui.screens.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -12,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.healthybotfront.presentacion.navigation.Screen
@@ -22,6 +26,8 @@ import java.time.format.TextStyle
 import java.util.*
 import com.example.healthybotfront.presentacion.viewmodel.ProfileViewModel
 import com.example.healthybotfront.presentacion.viewmodel.ProgressViewModel
+import java.time.format.DateTimeFormatter
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
@@ -38,12 +44,12 @@ fun HomeScreen(
     val showControlsMap = remember { mutableStateMapOf<Long, Boolean>() }
     val user by profileViewModel.user.collectAsState()
 
-    val currentDayName = remember {
-        LocalDate.now()
-            .dayOfWeek
-            .getDisplayName(TextStyle.FULL, Locale("es"))
-            .replaceFirstChar { it.uppercaseChar() }
-    }
+    val currentDate = LocalDate.now()
+    val currentDayName = currentDate
+        .dayOfWeek
+        .getDisplayName(TextStyle.FULL, Locale("es"))
+        .replaceFirstChar { it.uppercaseChar() }
+    val formattedDate = currentDate.format(DateTimeFormatter.ofPattern("dd/MM"))
 
     LaunchedEffect(userId) {
         habitViewModel.getHabits(userId)
@@ -92,7 +98,8 @@ fun HomeScreen(
                     Text("Progreso")
                 }
             }
-        }
+        },
+        containerColor = Color(0xFFF1F8E9) // 🎨 Fondo pastel verde claro
     ) { padding ->
         Column(
             modifier = Modifier
@@ -111,7 +118,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = currentDayName,
+                text = "$currentDayName - $formattedDate",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
@@ -121,15 +128,22 @@ fun HomeScreen(
             if (error != null) {
                 Text(text = "Error: $error", color = MaterialTheme.colorScheme.error)
             }
+
             habits.forEach { habit ->
-                val habitId = habit.habitId!!
+                val habitId = habit.habitId ?: return@forEach
                 val isChecked = checkStates[habitId] ?: false
                 val note = notesMap[habitId] ?: ""
                 val showControls = showControlsMap[habitId] ?: false
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
+                        .background(Color.White, shape = RoundedCornerShape(12.dp)) // 🟦 Tarjeta blanca
+                        .clickable {
+                            showControlsMap[habitId] = !(showControlsMap[habitId] ?: false)
+                        }
+                        .padding(16.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -152,10 +166,6 @@ fun HomeScreen(
                             onCheckedChange = { checked ->
                                 checkStates[habitId] = checked
                                 showControlsMap[habitId] = checked
-
-                                if (!checked) {
-                                    println("se ha desmarcado el habit ${habit.habitId}")
-                                }
                             }
                         )
                     }
@@ -167,37 +177,48 @@ fun HomeScreen(
                             label = { Text("Nota (opcional)") },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 4.dp)
+                                .padding(top = 8.dp)
                         )
 
                         Row(
-                            horizontalArrangement = Arrangement.End,
-                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
                         ) {
-                            TextButton(onClick = {
-                                progressViewModel.saveProgress(
-                                    habitId = habitId,
-                                    completed = true,
-                                    notes = null,
-                                    onError = { println(it) }
-                                )
-                                showControlsMap[habitId] = false
-                                notesMap[habitId] = ""
-                            }) {
-                                Text("Cancelar")
+                            Button(
+                                onClick = {
+                                    habitViewModel.deleteHabit(habitId) {
+                                        habitViewModel.getHabits(userId)
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFD6D6)) // rojo pastel
+                            ) {
+                                Text("Eliminar")
                             }
 
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Button(onClick = {
-                                progressViewModel.saveProgress(
-                                    habitId = habitId,
-                                    completed = true,
-                                    notes = note.takeIf { it.isNotBlank() },
-                                    onError = { println(it) }
-                                )
-                                showControlsMap[habitId] = false
-                                notesMap[habitId] = ""
-                            }) {
+                            Button(
+                                onClick = {
+                                    //navController.navigate(Screen.EditHabit.createRoute(userId, habitId))
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCCE5FF)) // azul pastel
+                            ) {
+                                Text("Modificar")
+                            }
+
+                            Button(
+                                onClick = {
+                                    progressViewModel.saveProgress(
+                                        habitId = habitId,
+                                        completed = true,
+                                        notes = note.takeIf { it.isNotBlank() },
+                                        onError = { println(it) }
+                                    )
+                                    showControlsMap[habitId] = false
+                                    notesMap[habitId] = ""
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD5F5E3)) // verde pastel
+                            ) {
                                 Text("Guardar")
                             }
                         }

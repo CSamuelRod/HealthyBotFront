@@ -14,4 +14,8 @@ class HabitRepository(
     suspend fun getHabitsByUserId(userId: Long): List<HabitDto> {
         return habitApi.getHabitsByUserId(userId)
     }
+
+    suspend fun deleteHabitById(habitId : Long){
+        return habitApi.delete(habitId)
+    }
 }

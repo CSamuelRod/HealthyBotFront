@@ -2,6 +2,7 @@ package com.example.healthybotfront.data.repository
 
 import com.example.healthybotfront.data.source.remote.api.ProgressApi
 import com.example.healthybotfront.data.source.remote.dto.ProgressDto
+import com.example.healthybotfront.data.source.remote.dto.ProgressPercentageDto
 
 class ProgressRepository(
     private val progressApi: ProgressApi
@@ -10,7 +11,7 @@ class ProgressRepository(
         return progressApi.saveProgress(progressDto)
     }
 
-    suspend fun getProgressListByHabitId(id :Long) : List<ProgressDto>{
-        return progressApi.getProgressListByHabitId(id)
+    suspend fun getProgressPercentageByUserId(userId: Long): List<ProgressPercentageDto> {
+        return progressApi.getProgressPercentageByUserId(userId)
     }
 }
