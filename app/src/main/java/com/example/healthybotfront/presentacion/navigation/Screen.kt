@@ -18,5 +18,9 @@ sealed class Screen(val route: String) {
         fun createRoute(userId: Long) = "progress/$userId"
     }
 
+    object UpdateUser : Screen("update/{userId}") {
+        fun createRoute(userId: Long) = "update/$userId"
+    }
+
 }
 

@@ -7,5 +7,5 @@ data class UserDto(
     val name: String,
     val lastName: String,
     val email: String,
-    val registrationDate: String
+    val registrationDate: String?
 )

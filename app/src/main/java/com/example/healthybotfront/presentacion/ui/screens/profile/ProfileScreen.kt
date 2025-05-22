@@ -61,7 +61,9 @@ fun ProfileScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = { navController.navigate("edit_profile/$userId") },
+                    onClick = {
+                        navController.navigate(Screen.UpdateUser.createRoute(userId))
+                    },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC8E6C9))
                 ) {
