@@ -30,6 +30,8 @@ fun RegisterScreen(
 ) {
     val context = LocalContext.current
     val registerResult by viewModel.registerState.collectAsState()
+    val isRegistrationSuccessful by viewModel.isRegistrationSuccessful.collectAsState()
+
 
     var showErrorDialog by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
@@ -43,29 +45,17 @@ fun RegisterScreen(
     LaunchedEffect(email) { viewModel.setEmail(email) }
     LaunchedEffect(password) { viewModel.setPassword(password) }
 
-    // Registration result handler
-    LaunchedEffect(registerResult) {
-        if (registerResult.startsWith("Registro exitoso")) {
+    LaunchedEffect(isRegistrationSuccessful) {
+        if (isRegistrationSuccessful) {
             Toast.makeText(context, registerResult, Toast.LENGTH_SHORT).show()
             navController.navigate(Screen.Login.route)
-        } else if (registerResult.startsWith("Error")) {
-            showErrorDialog = true
         }
     }
 
-    // Error Dialog
-    if (showErrorDialog) {
-        AlertDialog(
-            onDismissRequest = { showErrorDialog = false },
-            confirmButton = {
-                TextButton(onClick = { showErrorDialog = false }) {
-                    Text("Aceptar")
-                }
-            },
-            title = { Text("Error de Registro") },
-            text = { Text(registerResult) },
-            containerColor = Color.White
-        )
+    LaunchedEffect(registerResult) {
+        if (registerResult.startsWith("Error")) {
+            showErrorDialog = true
+        }
     }
 
     // UI principal
@@ -175,6 +165,21 @@ fun RegisterScreen(
                         ) {
                             Text("Guardar", color = Color.White)
                         }
+
+                    }
+                    // Error Dialog
+                    if (showErrorDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showErrorDialog = false },
+                            confirmButton = {
+                                TextButton(onClick = { showErrorDialog = false }) {
+                                    Text("Aceptar")
+                                }
+                            },
+                            title = { Text("Error de Registro") },
+                            text = { Text(registerResult) },
+                            containerColor = Color.White
+                        )
                     }
                 }
             }

@@ -10,9 +10,11 @@ import com.example.healthybotfront.domain.usecase.CreateGoalUseCase
 import com.example.healthybotfront.domain.usecase.CreateHabitUseCase
 import com.example.healthybotfront.domain.usecase.DeleteGoalUseCase
 import com.example.healthybotfront.domain.usecase.DeleteHabitUseCase
+import com.example.healthybotfront.domain.usecase.DeleteProgressUseCase
 import com.example.healthybotfront.domain.usecase.DeleteUserUseCase
 import com.example.healthybotfront.domain.usecase.GetGoalByHabitIdUseCase
 import com.example.healthybotfront.domain.usecase.GetHabitsByUserIdUseCase
+import com.example.healthybotfront.domain.usecase.GetProgressByUserAndDateUseCase
 import com.example.healthybotfront.domain.usecase.GetProgressPercentageByUserUseCase
 import com.example.healthybotfront.domain.usecase.GetUserUseCase
 import com.example.healthybotfront.domain.usecase.LoginUseCase
@@ -79,7 +81,10 @@ val appModule = module {
 
     factory { GetProgressPercentageByUserUseCase(get()) }
     factory { SaveProgressUseCase(get()) }
+    factory { DeleteProgressUseCase (get()) }
+    factory{ GetProgressByUserAndDateUseCase ( get())}
+    factory {  }
 
-    viewModel { ProgressViewModel(get(), get()) }
+    viewModel { ProgressViewModel(get(), get(),get(),get(),get()) }
     viewModel { GetProgressPercentageViewModel(get()) }
 }

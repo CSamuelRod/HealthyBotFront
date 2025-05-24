@@ -20,13 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.healthybotfront.presentacion.navigation.Screen
 import com.example.healthybotfront.presentacion.viewmodel.HabitViewModel
-import org.koin.androidx.compose.koinViewModel
-import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.*
 import com.example.healthybotfront.presentacion.viewmodel.ProfileViewModel
 import com.example.healthybotfront.presentacion.viewmodel.ProgressViewModel
+import org.koin.androidx.compose.koinViewModel
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -39,9 +39,6 @@ fun HomeScreen(
 ) {
     val habits by habitViewModel.habits.collectAsState()
     val error by habitViewModel.errorMessage.collectAsState()
-    val checkStates = remember { mutableStateMapOf<Long, Boolean>() }
-    val notesMap = remember { mutableStateMapOf<Long, String>() }
-    val showControlsMap = remember { mutableStateMapOf<Long, Boolean>() }
     val user by profileViewModel.user.collectAsState()
 
     val currentDate = LocalDate.now()
@@ -51,9 +48,30 @@ fun HomeScreen(
         .replaceFirstChar { it.uppercaseChar() }
     val formattedDate = currentDate.format(DateTimeFormatter.ofPattern("dd/MM"))
 
+    // Estados para checkbox, notas y controles
+    val checkStates = remember { mutableStateMapOf<Long, Boolean>() }
+    val notesMap = remember { mutableStateMapOf<Long, String>() }
+    val showControlsMap = remember { mutableStateMapOf<Long, Boolean>() }
+    // Guardamos progressId para cada hábito para eliminar
+    val progressIdMap = remember { mutableStateMapOf<Long, Long>() }
+
+    // Progreso diario desde ViewModel
+    val dailyProgress by progressViewModel.dailyProgress.collectAsState()
+
+    // Cargar datos al iniciar pantalla
     LaunchedEffect(userId) {
         habitViewModel.getHabits(userId)
         profileViewModel.loadUser(userId)
+        progressViewModel.loadDailyProgress(userId, currentDate)
+    }
+
+    // Sincronizar estado de checkboxes y progressId con progreso cargado
+    LaunchedEffect(dailyProgress) {
+        dailyProgress.forEach { (habitId, progressDto) ->
+            checkStates[habitId] = progressDto.completed
+            // Asumiendo que ProgressDto tiene progressId
+            progressDto.progressId?.let { progressIdMap[habitId] = it }
+        }
     }
 
     Scaffold(
@@ -99,7 +117,7 @@ fun HomeScreen(
                 }
             }
         },
-        containerColor = Color(0xFFF1F8E9) // 🎨 Fondo pastel verde claro
+        containerColor = Color(0xFFF1F8E9) // Fondo pastel verde claro
     ) { padding ->
         Column(
             modifier = Modifier
@@ -139,7 +157,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
-                        .background(Color.White, shape = RoundedCornerShape(12.dp)) // 🟦 Tarjeta blanca
+                        .background(Color.White, shape = RoundedCornerShape(12.dp))
                         .clickable {
                             showControlsMap[habitId] = !(showControlsMap[habitId] ?: false)
                         }
@@ -166,6 +184,23 @@ fun HomeScreen(
                             onCheckedChange = { checked ->
                                 checkStates[habitId] = checked
                                 showControlsMap[habitId] = checked
+
+                                if (checked) {
+                                    // Crear o actualizar progreso
+                                    progressViewModel.saveProgress(
+                                        habitId = habitId,
+                                        completed = true,
+                                        notes = notesMap[habitId]?.takeIf { it.isNotBlank() },
+                                        onError = { println("Error guardando progreso: $it") }
+                                    )
+                                } else {
+                                    // Eliminar progreso si existe progressId
+                                    progressIdMap[habitId]?.let { progressId ->
+                                        progressViewModel.deleteProgress(progressId)
+                                        progressIdMap.remove(habitId)
+                                    }
+                                    notesMap[habitId] = ""
+                                }
                             }
                         )
                     }
@@ -192,16 +227,16 @@ fun HomeScreen(
                                         habitViewModel.getHabits(userId)
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFD6D6)) // rojo pastel
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFD6D6))
                             ) {
                                 Text("Eliminar")
                             }
 
                             Button(
                                 onClick = {
-                                    //navController.navigate(Screen.EditHabit.createRoute(userId, habitId))
+                                    // navController.navigate(Screen.EditHabit.createRoute(userId, habitId))
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCCE5FF)) // azul pastel
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCCE5FF))
                             ) {
                                 Text("Modificar")
                             }
@@ -217,7 +252,7 @@ fun HomeScreen(
                                     showControlsMap[habitId] = false
                                     notesMap[habitId] = ""
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD5F5E3)) // verde pastel
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD5F5E3))
                             ) {
                                 Text("Guardar")
                             }

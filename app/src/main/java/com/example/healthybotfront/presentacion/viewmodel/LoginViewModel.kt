@@ -33,13 +33,38 @@ class LoginViewModel(
 
     fun login() {
         viewModelScope.launch {
+            // Validación local antes del login
+            if (_email.value.isBlank() || _password.value.isBlank()) {
+                _error.value = "Por favor, completa todos los campos"
+                return@launch
+            }
+
+            if (!isValidEmail(_email.value)) {
+                _error.value = "El correo no es válido"
+                return@launch
+            }
+
             try {
                 val result = loginUseCase(_email.value, _password.value)
                 _userId.value = result.second
+
+                if (result.second == -1L) {
+                    _error.value = result.first
+                } else {
+                    _error.value = "" // limpiar mensaje de error
+                }
             } catch (e: Exception) {
                 _error.value = "Error: ${e.message}"
             }
         }
     }
+
+    private fun isValidEmail(email: String): Boolean {
+        val regex = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")
+        return regex.matches(email)
+    }
+
+
+
 }
 

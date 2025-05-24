@@ -44,22 +44,27 @@ class RegisterViewModel(
         _password.value = password
     }
 
-    // Función para registrar al usuario
+    private val _isRegistrationSuccessful = MutableStateFlow(false)
+    val isRegistrationSuccessful: StateFlow<Boolean> = _isRegistrationSuccessful
+
     fun register() {
         viewModelScope.launch {
             try {
-                // Pasamos los valores directamente al UseCase
-                val response = registerUseCase.invoke(
-                    _name.value,
-                    _lastname.value,
-                    _email.value,
-                    _password.value
-                )
+                val response = registerUseCase.invoke(_name.value, _lastname.value, _email.value, _password.value)
 
-                _registerState.value = "Registro exitoso: $response"
+                if (response.contains("registrado con éxito", ignoreCase = true)) {
+                    _registerState.value = "Registro exitoso: $response"
+                    _isRegistrationSuccessful.value = true
+                } else {
+                    _registerState.value = "Error: $response"
+                    _isRegistrationSuccessful.value = false
+                }
             } catch (e: Exception) {
                 _registerState.value = "Error: ${e.message}"
+                _isRegistrationSuccessful.value = false
             }
         }
     }
+
+
 }

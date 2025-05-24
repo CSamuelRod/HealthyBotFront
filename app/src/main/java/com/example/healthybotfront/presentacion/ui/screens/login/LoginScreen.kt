@@ -29,13 +29,17 @@ fun LoginScreen(
     val email by viewModel.email.collectAsState()
     val password by viewModel.password.collectAsState()
     val userId by viewModel.userId.collectAsState()
+    val error by viewModel.error.collectAsState()
+    val isFormValid = email.isNotBlank() && password.isNotBlank()
+
 
     LaunchedEffect(userId) {
-        userId?.let {
-            println("Exitoso login con id : $it")
-            navController.navigate(Screen.Home.createRoute(it))
+        if (userId != null && userId != -1L) {
+            println("Exitoso login con id : $userId")
+            navController.navigate(Screen.Home.createRoute(userId!!))
         }
     }
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -101,12 +105,25 @@ fun LoginScreen(
                     Button(
                         onClick = { viewModel.login() },
                         modifier = Modifier.fillMaxWidth(),
+                        enabled = isFormValid,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFC8E6C9) // verde pastel
                         )
                     ) {
                         Text("Iniciar sesión", color = Color.Black)
                     }
+                    if (error.isNotBlank()) {
+                        Text(
+                            text = error,
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                        )
+                    }
+
 
                     Spacer(modifier = Modifier.height(12.dp))
 
