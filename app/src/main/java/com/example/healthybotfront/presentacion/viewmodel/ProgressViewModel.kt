@@ -5,11 +5,11 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.healthybotfront.data.source.remote.dto.ProgressDto
-import com.example.healthybotfront.domain.usecase.GetGoalByHabitIdUseCase
-import com.example.healthybotfront.domain.usecase.GetHabitsByUserIdUseCase
-import com.example.healthybotfront.domain.usecase.GetProgressByUserAndDateUseCase
-import com.example.healthybotfront.domain.usecase.DeleteProgressUseCase
-import com.example.healthybotfront.domain.usecase.SaveProgressUseCase
+import com.example.healthybotfront.domain.usecase.goalUseCases.GetGoalByHabitIdUseCase
+import com.example.healthybotfront.domain.usecase.habitUseCases.GetHabitsByUserIdUseCase
+import com.example.healthybotfront.domain.usecase.progressUseCases.GetProgressByUserAndDateUseCase
+import com.example.healthybotfront.domain.usecase.progressUseCases.DeleteProgressUseCase
+import com.example.healthybotfront.domain.usecase.progressUseCases.SaveProgressUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

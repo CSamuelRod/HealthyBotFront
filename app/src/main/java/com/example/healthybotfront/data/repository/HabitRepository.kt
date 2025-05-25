@@ -8,12 +8,20 @@ class HabitRepository(
 ){
 
     suspend fun createHabit(habit: HabitDto): HabitDto {
-        return habitApi.createHabit(habit.userId, habit)
+        return habitApi.createHabit(habit.userId!!, habit)
     }
 
+    suspend fun getHabitById(habitId: Long): HabitDto? {
+        return habitApi.getHabitById(habitId)
+    }
     suspend fun getHabitsByUserId(userId: Long): List<HabitDto> {
         return habitApi.getHabitsByUserId(userId)
     }
+
+    suspend fun updateHabit(habitId: Long, habitDto: HabitDto): HabitDto {
+        return habitApi.updateHabit(habitId, habitDto)
+    }
+
 
     suspend fun deleteHabitById(habitId : Long){
         return habitApi.delete(habitId)

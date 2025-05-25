@@ -1,4 +1,4 @@
-package com.example.healthybotfront.domain.usecase
+package com.example.healthybotfront.domain.usecase.habitUseCases
 
 import com.example.healthybotfront.data.repository.HabitRepository
 

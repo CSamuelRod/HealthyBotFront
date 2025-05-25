@@ -11,6 +11,7 @@ import com.example.healthybotfront.presentacion.ui.screens.login.LoginScreen
 import com.example.healthybotfront.presentacion.ui.screens.home.HomeScreen // Asegúrate de tener esta pantalla
 import com.example.healthybotfront.presentacion.ui.screens.profile.ProfileScreen
 import com.example.healthybotfront.presentacion.ui.screens.progress.ProgressScreen
+import com.example.healthybotfront.presentacion.ui.screens.updateHabit.UpdateHabitScreen
 import com.example.healthybotfront.presentacion.ui.screens.updateUserProfile.UpdateUserScreen
 import com.example.healthybotfront.presentation.register.RegisterScreen
 
@@ -72,7 +73,13 @@ fun NavGraph(startDestination: String = Screen.Login.route) {
             UpdateUserScreen(navController,userId)
         }
 
-
+        composable(
+            route = Screen.UpdateHabit.route,
+            arguments = listOf(navArgument("habitId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val habitId = backStackEntry.arguments?.getLong("habitId") ?: 0L
+            UpdateHabitScreen(navController,habitId)
+        }
 
     }
 }

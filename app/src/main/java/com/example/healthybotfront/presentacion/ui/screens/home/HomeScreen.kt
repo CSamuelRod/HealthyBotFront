@@ -48,28 +48,22 @@ fun HomeScreen(
         .replaceFirstChar { it.uppercaseChar() }
     val formattedDate = currentDate.format(DateTimeFormatter.ofPattern("dd/MM"))
 
-    // Estados para checkbox, notas y controles
     val checkStates = remember { mutableStateMapOf<Long, Boolean>() }
     val notesMap = remember { mutableStateMapOf<Long, String>() }
     val showControlsMap = remember { mutableStateMapOf<Long, Boolean>() }
-    // Guardamos progressId para cada hábito para eliminar
     val progressIdMap = remember { mutableStateMapOf<Long, Long>() }
 
-    // Progreso diario desde ViewModel
     val dailyProgress by progressViewModel.dailyProgress.collectAsState()
 
-    // Cargar datos al iniciar pantalla
     LaunchedEffect(userId) {
         habitViewModel.getHabits(userId)
         profileViewModel.loadUser(userId)
         progressViewModel.loadDailyProgress(userId, currentDate)
     }
 
-    // Sincronizar estado de checkboxes y progressId con progreso cargado
     LaunchedEffect(dailyProgress) {
         dailyProgress.forEach { (habitId, progressDto) ->
             checkStates[habitId] = progressDto.completed
-            // Asumiendo que ProgressDto tiene progressId
             progressDto.progressId?.let { progressIdMap[habitId] = it }
         }
     }
@@ -117,7 +111,7 @@ fun HomeScreen(
                 }
             }
         },
-        containerColor = Color(0xFFF1F8E9) // Fondo pastel verde claro
+        containerColor = Color(0xFFF1F8E9)
     ) { padding ->
         Column(
             modifier = Modifier
@@ -185,22 +179,15 @@ fun HomeScreen(
                                 checkStates[habitId] = checked
                                 showControlsMap[habitId] = checked
 
-                                if (checked) {
-                                    // Crear o actualizar progreso
-                                    progressViewModel.saveProgress(
-                                        habitId = habitId,
-                                        completed = true,
-                                        notes = notesMap[habitId]?.takeIf { it.isNotBlank() },
-                                        onError = { println("Error guardando progreso: $it") }
-                                    )
-                                } else {
-                                    // Eliminar progreso si existe progressId
+                                if (!checked) {
+                                    // Eliminar progreso si desmarcado
                                     progressIdMap[habitId]?.let { progressId ->
                                         progressViewModel.deleteProgress(progressId)
                                         progressIdMap.remove(habitId)
                                     }
                                     notesMap[habitId] = ""
                                 }
+                                // Ya no se guarda automáticamente al marcar
                             }
                         )
                     }
@@ -234,7 +221,7 @@ fun HomeScreen(
 
                             Button(
                                 onClick = {
-                                    // navController.navigate(Screen.EditHabit.createRoute(userId, habitId))
+                                    navController.navigate(Screen.UpdateHabit.createRoute(habitId))
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCCE5FF))
                             ) {
@@ -247,10 +234,11 @@ fun HomeScreen(
                                         habitId = habitId,
                                         completed = true,
                                         notes = note.takeIf { it.isNotBlank() },
-                                        onError = { println(it) }
+                                        onError = { println("Error guardando progreso: $it") }
                                     )
                                     showControlsMap[habitId] = false
-                                    notesMap[habitId] = ""
+                                    checkStates[habitId] = true // Marcar como completado tras guardar
+                                    // Idealmente actualizar también progressIdMap si tienes callback
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD5F5E3))
                             ) {

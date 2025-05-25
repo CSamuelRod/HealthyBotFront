@@ -4,10 +4,10 @@ package com.example.healthybotfront.presentacion.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.healthybotfront.data.source.remote.dto.GoalDto
-import com.example.healthybotfront.domain.usecase.CreateGoalUseCase
-import com.example.healthybotfront.domain.usecase.DeleteGoalUseCase
-import com.example.healthybotfront.domain.usecase.GetGoalByHabitIdUseCase
-import com.example.healthybotfront.domain.usecase.UpdateGoalUseCase
+import com.example.healthybotfront.domain.usecase.goalUseCases.CreateGoalUseCase
+import com.example.healthybotfront.domain.usecase.goalUseCases.DeleteGoalUseCase
+import com.example.healthybotfront.domain.usecase.goalUseCases.GetGoalByHabitIdUseCase
+import com.example.healthybotfront.domain.usecase.goalUseCases.UpdateGoalUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

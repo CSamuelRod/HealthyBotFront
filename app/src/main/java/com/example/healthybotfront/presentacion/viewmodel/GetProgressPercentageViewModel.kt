@@ -3,7 +3,7 @@ package com.example.healthybotfront.presentacion.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.healthybotfront.data.source.remote.dto.ProgressPercentageDto
-import com.example.healthybotfront.domain.usecase.GetProgressPercentageByUserUseCase
+import com.example.healthybotfront.domain.usecase.progressUseCases.GetProgressPercentageByUserUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

@@ -164,14 +164,12 @@ fun CreateHabitScreen(
                                 val habit = HabitDto(
                                     name = name,
                                     description = description,
-                                    isCustom = true,
                                     userId = userId
                                 )
 
                                 habitViewModel.createHabit(habit) { createdHabit ->
                                     val goal = GoalDto(
                                         goalId = null,
-                                        user_id = userId,
                                         habit_id = createdHabit.habitId!!,
                                         objective = objective,
                                         frequency = selectedFrequency,

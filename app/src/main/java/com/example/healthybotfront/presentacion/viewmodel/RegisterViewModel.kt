@@ -2,8 +2,7 @@ package com.example.healthybotfront.presentacion.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.healthybotfront.data.source.remote.dto.RegisterRequest
-import com.example.healthybotfront.domain.usecase.RegisterUseCase
+import com.example.healthybotfront.domain.usecase.AuthUseCases.RegisterUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

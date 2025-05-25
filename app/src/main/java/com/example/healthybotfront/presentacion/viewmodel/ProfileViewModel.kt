@@ -3,9 +3,9 @@ package com.example.healthybotfront.presentacion.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.healthybotfront.data.source.remote.dto.UserDto
-import com.example.healthybotfront.domain.usecase.DeleteUserUseCase
-import com.example.healthybotfront.domain.usecase.GetUserUseCase
-import com.example.healthybotfront.domain.usecase.UpdateUserUseCase
+import com.example.healthybotfront.domain.usecase.userUseCases.DeleteUserUseCase
+import com.example.healthybotfront.domain.usecase.userUseCases.GetUserUseCase
+import com.example.healthybotfront.domain.usecase.userUseCases.UpdateUserUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

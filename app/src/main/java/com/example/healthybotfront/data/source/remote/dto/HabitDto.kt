@@ -5,7 +5,6 @@ data class HabitDto(
     val habitId: Long? = null,
     val name: String,
     val description: String,
-    val isCustom: Boolean = true,
     val goalId:Long? = null,
-    val userId: Long
+    val userId: Long? = null
 )

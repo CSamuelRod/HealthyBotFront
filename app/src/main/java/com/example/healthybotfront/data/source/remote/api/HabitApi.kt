@@ -16,8 +16,18 @@ interface HabitApi {
         @Body habitDto: HabitDto
     ): HabitDto
 
-    @GET("/api/habits/{userId}")
+    @GET("/api/habits/{habitId}")
+    suspend fun getHabitById(@Path("habitId") id: Long): HabitDto
+
+    @GET("/api/habits/user/{userId}")
     suspend fun getHabitsByUserId(@Path("userId") userId: Long): List<HabitDto>
+
+    @PUT("/api/habits/{habitId}")
+    suspend fun updateHabit(
+        @Path("habitId") habitId: Long,
+        @Body habitDto: HabitDto
+    ): HabitDto
+
 
     @DELETE("/api/habits/{habitId}")
     suspend fun delete(@Path("habitId") habitId: Long)

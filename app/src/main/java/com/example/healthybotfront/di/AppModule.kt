@@ -5,23 +5,24 @@ import com.example.healthybotfront.data.repository.GoalRepository
 import com.example.healthybotfront.data.repository.HabitRepository
 import com.example.healthybotfront.data.repository.ProgressRepository
 import com.example.healthybotfront.data.repository.UserRepository
-import com.example.healthybotfront.data.source.remote.api.UserApi
-import com.example.healthybotfront.domain.usecase.CreateGoalUseCase
-import com.example.healthybotfront.domain.usecase.CreateHabitUseCase
-import com.example.healthybotfront.domain.usecase.DeleteGoalUseCase
-import com.example.healthybotfront.domain.usecase.DeleteHabitUseCase
-import com.example.healthybotfront.domain.usecase.DeleteProgressUseCase
-import com.example.healthybotfront.domain.usecase.DeleteUserUseCase
-import com.example.healthybotfront.domain.usecase.GetGoalByHabitIdUseCase
-import com.example.healthybotfront.domain.usecase.GetHabitsByUserIdUseCase
-import com.example.healthybotfront.domain.usecase.GetProgressByUserAndDateUseCase
-import com.example.healthybotfront.domain.usecase.GetProgressPercentageByUserUseCase
-import com.example.healthybotfront.domain.usecase.GetUserUseCase
-import com.example.healthybotfront.domain.usecase.LoginUseCase
-import com.example.healthybotfront.domain.usecase.RegisterUseCase
-import com.example.healthybotfront.domain.usecase.SaveProgressUseCase
-import com.example.healthybotfront.domain.usecase.UpdateGoalUseCase
-import com.example.healthybotfront.domain.usecase.UpdateUserUseCase
+import com.example.healthybotfront.domain.usecase.goalUseCases.CreateGoalUseCase
+import com.example.healthybotfront.domain.usecase.habitUseCases.CreateHabitUseCase
+import com.example.healthybotfront.domain.usecase.goalUseCases.DeleteGoalUseCase
+import com.example.healthybotfront.domain.usecase.habitUseCases.DeleteHabitUseCase
+import com.example.healthybotfront.domain.usecase.progressUseCases.DeleteProgressUseCase
+import com.example.healthybotfront.domain.usecase.userUseCases.DeleteUserUseCase
+import com.example.healthybotfront.domain.usecase.goalUseCases.GetGoalByHabitIdUseCase
+import com.example.healthybotfront.domain.usecase.habitUseCases.GetHabitsByUserIdUseCase
+import com.example.healthybotfront.domain.usecase.progressUseCases.GetProgressByUserAndDateUseCase
+import com.example.healthybotfront.domain.usecase.progressUseCases.GetProgressPercentageByUserUseCase
+import com.example.healthybotfront.domain.usecase.userUseCases.GetUserUseCase
+import com.example.healthybotfront.domain.usecase.AuthUseCases.LoginUseCase
+import com.example.healthybotfront.domain.usecase.AuthUseCases.RegisterUseCase
+import com.example.healthybotfront.domain.usecase.progressUseCases.SaveProgressUseCase
+import com.example.healthybotfront.domain.usecase.goalUseCases.UpdateGoalUseCase
+import com.example.healthybotfront.domain.usecase.habitUseCases.GetHabitByIdUseCase
+import com.example.healthybotfront.domain.usecase.habitUseCases.UpdateHabitUseCase
+import com.example.healthybotfront.domain.usecase.userUseCases.UpdateUserUseCase
 import com.example.healthybotfront.presentacion.viewmodel.GetProgressPercentageViewModel
 import com.example.healthybotfront.presentacion.viewmodel.GoalViewModel
 import com.example.healthybotfront.presentacion.viewmodel.HabitViewModel
@@ -61,8 +62,11 @@ val appModule = module {
     factory { CreateHabitUseCase(get()) }
     factory { GetHabitsByUserIdUseCase(get()) }
     factory { DeleteHabitUseCase(get()) }
+    factory { UpdateHabitUseCase(get()) }
+    factory { GetHabitByIdUseCase(get()) }
 
-    viewModel { HabitViewModel(get(), get(), get()) }
+
+    viewModel { HabitViewModel(get(), get(), get(), get(),get()) }
 
 
     // --- Goal ---
@@ -82,8 +86,8 @@ val appModule = module {
     factory { GetProgressPercentageByUserUseCase(get()) }
     factory { SaveProgressUseCase(get()) }
     factory { DeleteProgressUseCase (get()) }
-    factory{ GetProgressByUserAndDateUseCase ( get())}
-    factory {  }
+    factory{ GetProgressByUserAndDateUseCase ( get()) }
+
 
     viewModel { ProgressViewModel(get(), get(),get(),get(),get()) }
     viewModel { GetProgressPercentageViewModel(get()) }

@@ -1,4 +1,4 @@
-package com.example.healthybotfront.domain.usecase
+package com.example.healthybotfront.domain.usecase.progressUseCases
 
 import com.example.healthybotfront.data.repository.ProgressRepository
 import com.example.healthybotfront.data.source.remote.dto.ProgressDto
