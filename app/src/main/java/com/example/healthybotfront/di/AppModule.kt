@@ -22,7 +22,9 @@ import com.example.healthybotfront.domain.usecase.progressUseCases.SaveProgressU
 import com.example.healthybotfront.domain.usecase.goalUseCases.UpdateGoalUseCase
 import com.example.healthybotfront.domain.usecase.habitUseCases.GetHabitByIdUseCase
 import com.example.healthybotfront.domain.usecase.habitUseCases.UpdateHabitUseCase
+import com.example.healthybotfront.domain.usecase.userUseCases.ResetPasswordUseCase
 import com.example.healthybotfront.domain.usecase.userUseCases.UpdateUserUseCase
+import com.example.healthybotfront.presentacion.viewmodel.ForgotPasswordViewModel
 import com.example.healthybotfront.presentacion.viewmodel.GetProgressPercentageViewModel
 import com.example.healthybotfront.presentacion.viewmodel.GoalViewModel
 import com.example.healthybotfront.presentacion.viewmodel.HabitViewModel
@@ -52,9 +54,10 @@ val appModule = module {
     factory { GetUserUseCase(get()) }
     factory { DeleteUserUseCase(get()) }
     factory { UpdateUserUseCase(get()) }
+    factory { ResetPasswordUseCase(get())}
 
     viewModel { ProfileViewModel(get(), get(), get()) }
-
+    viewModel { ForgotPasswordViewModel ( get())}
 
     // --- Habit ---
     single { HabitRepository(get()) }

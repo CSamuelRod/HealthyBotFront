@@ -16,4 +16,8 @@ interface UserApi {
 
     @DELETE("/api/users/{id}")
     suspend fun deleteUser(@Path("id") userId: Long)
+
+    @PUT("/api/users/reset-password")
+    suspend fun resetPassword(@Body request: LoginRequest) : LoginRequest
+
 }

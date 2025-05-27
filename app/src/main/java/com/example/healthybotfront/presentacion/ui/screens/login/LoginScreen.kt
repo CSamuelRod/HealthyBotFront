@@ -100,6 +100,16 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
+                    TextButton(
+                        onClick = { navController.navigate(Screen.ForgotPassword.route) },
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(top = 4.dp)
+                    ) {
+                        Text("¿Olvidaste tu contraseña?", color = MaterialTheme.colorScheme.primary)
+                    }
+
+
                     Spacer(modifier = Modifier.height(24.dp))
 
                     Button(

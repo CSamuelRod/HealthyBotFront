@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.healthybotfront.presentacion.ui.screens.forgotPasswordScreen.ForgotPasswordScreen
 import com.example.healthybotfront.presentacion.ui.screens.habits.CreateHabitScreen
 import com.example.healthybotfront.presentacion.ui.screens.login.LoginScreen
 import com.example.healthybotfront.presentacion.ui.screens.home.HomeScreen // Asegúrate de tener esta pantalla
@@ -79,6 +80,10 @@ fun NavGraph(startDestination: String = Screen.Login.route) {
         ) { backStackEntry ->
             val habitId = backStackEntry.arguments?.getLong("habitId") ?: 0L
             UpdateHabitScreen(navController,habitId)
+        }
+
+        composable(Screen.ForgotPassword.route) {
+            ForgotPasswordScreen(navController)
         }
 
     }

@@ -26,5 +26,9 @@ sealed class Screen(val route: String) {
         fun createRoute(habitId: Long) = "update/$habitId"
     }
 
+    object ForgotPassword : Screen("forgot_password")
+
+
+
 }
 

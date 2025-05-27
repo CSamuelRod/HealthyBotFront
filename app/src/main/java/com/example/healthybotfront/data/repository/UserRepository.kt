@@ -1,6 +1,7 @@
 package com.example.healthybotfront.data.repository
 
 import com.example.healthybotfront.data.source.remote.api.UserApi
+import com.example.healthybotfront.data.source.remote.dto.LoginRequest
 import com.example.healthybotfront.data.source.remote.dto.UserDto
 
 class UserRepository(
@@ -13,4 +14,11 @@ class UserRepository(
         userApi.updateUser(userId, userDto)
 
     suspend fun deleteUser(userId: Long) = userApi.deleteUser(userId)
+
+    suspend fun resetPassword(email: String, newPassword: String): LoginRequest {
+        val request = LoginRequest(email, newPassword)
+        return userApi.resetPassword(request)
+    }
+
+
 }
