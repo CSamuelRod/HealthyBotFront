@@ -18,17 +18,17 @@ sealed class Screen(val route: String) {
         fun createRoute(userId: Long) = "progress/$userId"
     }
 
-    object UpdateUser : Screen("update/{userId}") {
-        fun createRoute(userId: Long) = "update/$userId"
+    object UpdateUser : Screen("update/profile/{userId}") {
+        fun createRoute(userId: Long) = "update/profile/$userId"
     }
 
-    object UpdateHabit : Screen("update/{habitId}") {
-        fun createRoute(habitId: Long) = "update/$habitId"
+    object UpdateHabit : Screen("update/habit/{habitId}") {
+        fun createRoute(habitId: Long) = "update/habit/$habitId"
     }
 
     object ForgotPassword : Screen("forgot_password")
 
-
+    object NotificationsPicker : Screen("notif-picker")
 
 }
 

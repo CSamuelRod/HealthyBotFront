@@ -46,8 +46,38 @@ class RegisterViewModel(
     private val _isRegistrationSuccessful = MutableStateFlow(false)
     val isRegistrationSuccessful: StateFlow<Boolean> = _isRegistrationSuccessful
 
+    private fun areFieldsValid(): String? {
+        if (_name.value.isBlank() || _lastname.value.isBlank() || _email.value.isBlank() || _password.value.isBlank()) {
+            return "Todos los campos son obligatorios"
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(_email.value).matches() ||
+            !(_email.value.endsWith("@gmail.com") || _email.value.endsWith("@hotmail.com"))) {
+            return "El correo debe ser válido y terminar en @gmail.com o @hotmail.com"
+        }
+
+        if (_password.value.length < 6) {
+            return "La contraseña debe tener al menos 6 caracteres"
+        }
+
+        if (!Regex(".*[A-Za-z].*").containsMatchIn(_password.value) ||
+            !Regex(".*[0-9].*").containsMatchIn(_password.value)) {
+            return "La contraseña debe contener letras y números"
+        }
+
+        return null
+    }
+
+
     fun register() {
         viewModelScope.launch {
+            val validationError = areFieldsValid()
+            if (validationError != null) {
+                _registerState.value = "Error: $validationError"
+                _isRegistrationSuccessful.value = false
+                return@launch
+            }
+
             try {
                 val response = registerUseCase.invoke(_name.value, _lastname.value, _email.value, _password.value)
 

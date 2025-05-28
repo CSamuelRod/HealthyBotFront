@@ -1,8 +1,10 @@
 package com.example.healthybotfront.presentacion.ui.screens.habits
 
+import android.app.DatePickerDialog
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -19,7 +21,9 @@ import com.example.healthybotfront.presentacion.ui.components.TopBarWithProfile
 import com.example.healthybotfront.presentacion.viewmodel.GoalViewModel
 import com.example.healthybotfront.presentacion.viewmodel.HabitViewModel
 import org.koin.androidx.compose.koinViewModel
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,18 +39,51 @@ fun CreateHabitScreen(
 
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-
     var objective by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
 
-    val frequencyOptions = listOf("DAILY", "WEEKLY", "MONTHLY")
-    var selectedFrequency by remember { mutableStateOf(frequencyOptions[0]) }
+    // Opciones mostradas en español (UI)
+    val displayFrequencyOptions = listOf("Diario", "Semanal", "Mensual")
+
+    // Mapeo a valores para backend en inglés
+    val frequencyMap = mapOf(
+        "Diario" to "DAILY",
+        "Semanal" to "WEEKLY",
+        "Mensual" to "MONTHLY"
+    )
+
+    var selectedDisplayFrequency by remember { mutableStateOf(displayFrequencyOptions[0]) }
     var expanded by remember { mutableStateOf(false) }
 
     var showError by remember { mutableStateOf(false) }
 
+    val calendar = Calendar.getInstance()
+    val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    if (showDatePicker) {
+        LaunchedEffect(Unit) {
+            DatePickerDialog(
+                context,
+                { _, year, month, dayOfMonth ->
+                    calendar.set(year, month, dayOfMonth)
+                    endDate = dateFormatter.format(calendar.time)
+                    showDatePicker = false
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            ).apply {
+                setOnCancelListener {
+                    showDatePicker = false
+                }
+            }.show()
+        }
+    }
+
+
     Scaffold(
-        containerColor = Color(0xFFE8F5E9), // Fondo pastel
+        containerColor = Color(0xFFE8F5E9),
         topBar = {
             TopBarWithProfile(
                 navController = navController,
@@ -77,7 +114,6 @@ fun CreateHabitScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // -------- Hábito --------
                     Text("Nuevo Hábito", style = MaterialTheme.typography.headlineSmall)
 
                     OutlinedTextField(
@@ -97,7 +133,6 @@ fun CreateHabitScreen(
 
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                    // -------- Meta --------
                     Text("Meta Asociada", style = MaterialTheme.typography.titleMedium)
 
                     OutlinedTextField(
@@ -107,13 +142,13 @@ fun CreateHabitScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    // Frecuencia con Dropdown
+                    // Dropdown frecuencia (UI en español, backend en inglés)
                     ExposedDropdownMenuBox(
                         expanded = expanded,
                         onExpandedChange = { expanded = !expanded }
                     ) {
                         OutlinedTextField(
-                            value = selectedFrequency,
+                            value = selectedDisplayFrequency,
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Frecuencia") },
@@ -127,11 +162,11 @@ fun CreateHabitScreen(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
                         ) {
-                            frequencyOptions.forEach { option ->
+                            displayFrequencyOptions.forEach { option ->
                                 DropdownMenuItem(
                                     text = { Text(option) },
                                     onClick = {
-                                        selectedFrequency = option
+                                        selectedDisplayFrequency = option
                                         expanded = false
                                     }
                                 )
@@ -141,10 +176,15 @@ fun CreateHabitScreen(
 
                     OutlinedTextField(
                         value = endDate,
-                        onValueChange = { endDate = it },
+                        onValueChange = {},
                         label = { Text("Fecha fin (YYYY-MM-DD)") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showDatePicker = true },
+                        readOnly = true,
+                        enabled = true
                     )
+
 
                     if (showError || errorMessage != null) {
                         Text(
@@ -172,7 +212,8 @@ fun CreateHabitScreen(
                                         goalId = null,
                                         habit_id = createdHabit.habitId!!,
                                         objective = objective,
-                                        frequency = selectedFrequency,
+                                        // Aquí enviamos la frecuencia en inglés
+                                        frequency = frequencyMap[selectedDisplayFrequency] ?: "DAILY",
                                         startDate = LocalDate.now().toString(),
                                         endDate = endDate
                                     )

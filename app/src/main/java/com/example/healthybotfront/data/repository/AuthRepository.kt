@@ -13,10 +13,6 @@ class AuthRepository(
         email: String,
         password: String
     ): String {
-        if (!isValidEmail(email)) {
-            return "El correo debe ser válido y terminar en @gmail.com o @hotmail.com"
-        }
-
         return try {
             val response = authApi.register(RegisterRequest(name, lastname, email, password))
             response.message
@@ -25,6 +21,7 @@ class AuthRepository(
             "Error: ${e.message ?: "Unknown error"}"
         }
     }
+
 
     suspend fun login(email: String, password: String): Pair<String, Long?> {
         return try {
@@ -48,12 +45,5 @@ class AuthRepository(
             e.printStackTrace()
             Pair("Error: ${e.message ?: "Error inesperado"}", null)
         }
-    }
-
-
-    private fun isValidEmail(email: String): Boolean {
-        // Acepta solo correos que terminen exactamente en @gmail.com o @hotmail.com
-        val regex = Regex("^[A-Za-z0-9._%+-]+@(gmail\\.com|hotmail\\.com)$")
-        return regex.matches(email)
     }
 }

@@ -108,40 +108,57 @@ fun ProfileScreen(
                     )
                 }
                 user != null -> {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        shape = RoundedCornerShape(20.dp),
-                        elevation = CardDefaults.cardElevation(6.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(
+                        Card(
                             modifier = Modifier
-                                .padding(24.dp)
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            shape = RoundedCornerShape(20.dp),
+                            elevation = CardDefaults.cardElevation(6.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
-                            Text(
-                                text = user!!.name,
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                            Column(
+                                modifier = Modifier
+                                    .padding(24.dp)
+                                    .fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Text(
+                                    text = user!!.name,
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = user!!.lastName,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = user!!.email,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
 
-                            Text(
-                                text = user!!.lastName,
-                                style = MaterialTheme.typography.titleMedium
-                            )
-
-                            Text(
-                                text = user!!.email,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                        Button(
+                            onClick = {
+                                navController.navigate(Screen.NotificationsPicker.route)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBBDEFB)),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                        ) {
+                            Text("Configurar Notificaciones", color = Color.Black)
                         }
                     }
                 }
             }
         }
+
     }
 }

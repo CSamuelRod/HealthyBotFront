@@ -5,6 +5,7 @@ import com.example.healthybotfront.data.repository.GoalRepository
 import com.example.healthybotfront.data.repository.HabitRepository
 import com.example.healthybotfront.data.repository.ProgressRepository
 import com.example.healthybotfront.data.repository.UserRepository
+import com.example.healthybotfront.domain.repository.SettingsRepository
 import com.example.healthybotfront.domain.usecase.goalUseCases.CreateGoalUseCase
 import com.example.healthybotfront.domain.usecase.habitUseCases.CreateHabitUseCase
 import com.example.healthybotfront.domain.usecase.goalUseCases.DeleteGoalUseCase
@@ -22,6 +23,8 @@ import com.example.healthybotfront.domain.usecase.progressUseCases.SaveProgressU
 import com.example.healthybotfront.domain.usecase.goalUseCases.UpdateGoalUseCase
 import com.example.healthybotfront.domain.usecase.habitUseCases.GetHabitByIdUseCase
 import com.example.healthybotfront.domain.usecase.habitUseCases.UpdateHabitUseCase
+import com.example.healthybotfront.domain.usecase.notificationsUseCases.GetNotificationTimeUseCase
+import com.example.healthybotfront.domain.usecase.notificationsUseCases.SetNotificationTimeUseCase
 import com.example.healthybotfront.domain.usecase.userUseCases.ResetPasswordUseCase
 import com.example.healthybotfront.domain.usecase.userUseCases.UpdateUserUseCase
 import com.example.healthybotfront.presentacion.viewmodel.ForgotPasswordViewModel
@@ -29,6 +32,7 @@ import com.example.healthybotfront.presentacion.viewmodel.GetProgressPercentageV
 import com.example.healthybotfront.presentacion.viewmodel.GoalViewModel
 import com.example.healthybotfront.presentacion.viewmodel.HabitViewModel
 import com.example.healthybotfront.presentacion.viewmodel.LoginViewModel
+import com.example.healthybotfront.presentacion.viewmodel.NotificationViewModel
 import com.example.healthybotfront.presentacion.viewmodel.ProfileViewModel
 import com.example.healthybotfront.presentacion.viewmodel.ProgressViewModel
 import com.example.healthybotfront.presentacion.viewmodel.RegisterViewModel
@@ -94,4 +98,13 @@ val appModule = module {
 
     viewModel { ProgressViewModel(get(), get(),get(),get(),get()) }
     viewModel { GetProgressPercentageViewModel(get()) }
+
+// --- Notifications ---
+    single { SettingsRepository(get()) }
+    factory { GetNotificationTimeUseCase(get()) }
+    factory { SetNotificationTimeUseCase(get()) }
+
+    viewModel { NotificationViewModel(get(), get()) }
+
+
 }

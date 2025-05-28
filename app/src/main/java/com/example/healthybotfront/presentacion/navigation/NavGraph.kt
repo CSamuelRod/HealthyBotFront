@@ -10,6 +10,7 @@ import com.example.healthybotfront.presentacion.ui.screens.forgotPasswordScreen.
 import com.example.healthybotfront.presentacion.ui.screens.habits.CreateHabitScreen
 import com.example.healthybotfront.presentacion.ui.screens.login.LoginScreen
 import com.example.healthybotfront.presentacion.ui.screens.home.HomeScreen // Asegúrate de tener esta pantalla
+import com.example.healthybotfront.presentacion.ui.screens.notificationTimePickerScreen.NotificationTimePickerScreen
 import com.example.healthybotfront.presentacion.ui.screens.profile.ProfileScreen
 import com.example.healthybotfront.presentacion.ui.screens.progress.ProgressScreen
 import com.example.healthybotfront.presentacion.ui.screens.updateHabit.UpdateHabitScreen
@@ -86,5 +87,9 @@ fun NavGraph(startDestination: String = Screen.Login.route) {
             ForgotPasswordScreen(navController)
         }
 
+
+        composable(Screen.NotificationsPicker.route){
+            NotificationTimePickerScreen(navController)
+        }
     }
 }
