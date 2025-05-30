@@ -246,9 +246,9 @@ fun CreateHabitScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+                        colors = ButtonDefaults.buttonColors(containerColor = darkColor)
                     ) {
-                        Text("Guardar hábito y meta", color = darkColor)
+                        Text("Guardar hábito y meta", color = Color.White)
                     }
                 }
             }

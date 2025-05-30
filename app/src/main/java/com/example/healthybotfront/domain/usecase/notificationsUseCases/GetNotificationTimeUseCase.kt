@@ -1,12 +1,8 @@
 package com.example.healthybotfront.domain.usecase.notificationsUseCases
 
-import com.example.healthybotfront.domain.repository.SettingsRepository
+import com.example.healthybotfront.domain.model.NotificationTime
+import com.example.healthybotfront.domain.repository.NotificationTimeRepository
 
-// GetNotificationTimeUseCase.kt
-import kotlinx.coroutines.flow.Flow
-
-class GetNotificationTimeUseCase(
-    private val repository: SettingsRepository
-) {
-    operator fun invoke(): Flow<Pair<Int, Int>> = repository.notificationTimeFlow
+class GetNotificationTimeUseCase(private val repository: NotificationTimeRepository) {
+    suspend operator fun invoke(): NotificationTime = repository.getTime()
 }

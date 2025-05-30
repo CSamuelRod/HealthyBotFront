@@ -5,7 +5,9 @@ import com.example.healthybotfront.data.repository.GoalRepository
 import com.example.healthybotfront.data.repository.HabitRepository
 import com.example.healthybotfront.data.repository.ProgressRepository
 import com.example.healthybotfront.data.repository.UserRepository
-import com.example.healthybotfront.domain.repository.SettingsRepository
+import com.example.healthybotfront.data.scheduler.DailyNotificationScheduler
+import com.example.healthybotfront.data.source.local.NotificationTimeRepositoryImpl
+import com.example.healthybotfront.domain.repository.NotificationTimeRepository
 import com.example.healthybotfront.domain.usecase.goalUseCases.CreateGoalUseCase
 import com.example.healthybotfront.domain.usecase.habitUseCases.CreateHabitUseCase
 import com.example.healthybotfront.domain.usecase.goalUseCases.DeleteGoalUseCase
@@ -24,6 +26,7 @@ import com.example.healthybotfront.domain.usecase.goalUseCases.UpdateGoalUseCase
 import com.example.healthybotfront.domain.usecase.habitUseCases.GetHabitByIdUseCase
 import com.example.healthybotfront.domain.usecase.habitUseCases.UpdateHabitUseCase
 import com.example.healthybotfront.domain.usecase.notificationsUseCases.GetNotificationTimeUseCase
+import com.example.healthybotfront.domain.usecase.notificationsUseCases.ScheduleNotificationUseCase
 import com.example.healthybotfront.domain.usecase.notificationsUseCases.SetNotificationTimeUseCase
 import com.example.healthybotfront.domain.usecase.userUseCases.ResetPasswordUseCase
 import com.example.healthybotfront.domain.usecase.userUseCases.UpdateUserUseCase
@@ -36,6 +39,7 @@ import com.example.healthybotfront.presentacion.viewmodel.NotificationViewModel
 import com.example.healthybotfront.presentacion.viewmodel.ProfileViewModel
 import com.example.healthybotfront.presentacion.viewmodel.ProgressViewModel
 import com.example.healthybotfront.presentacion.viewmodel.RegisterViewModel
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -100,11 +104,13 @@ val appModule = module {
     viewModel { GetProgressPercentageViewModel(get()) }
 
 // --- Notifications ---
-    single { SettingsRepository(get()) }
+    single<NotificationTimeRepository> { NotificationTimeRepositoryImpl(androidContext()) }
+    single { DailyNotificationScheduler() }
+
+    factory { SetNotificationTimeUseCase(get(), get()) }
     factory { GetNotificationTimeUseCase(get()) }
-    factory { SetNotificationTimeUseCase(get()) }
+    factory { ScheduleNotificationUseCase(get()) }
 
     viewModel { NotificationViewModel(get(), get()) }
-
 
 }

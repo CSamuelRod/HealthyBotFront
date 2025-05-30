@@ -1,9 +1,13 @@
 package com.example.healthybotfront.presentacion.ui.screens.notificationTimePickerScreen
+// presentation/ui/screens/
 
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -14,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.healthybotfront.data.receiver.NotificationReceiver
 import com.example.healthybotfront.presentacion.viewmodel.NotificationViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -40,80 +45,84 @@ fun NotificationTimePickerScreen(
         )
     }
 
-    // 🎨 Colores pastel
-    val backgroundColor = Color(0xFFECEFF1)
-    val buttonGreen = Color(0xFFC8E6C9)
-    val buttonBlue = Color(0xFFB3E5FC)
-    val darkText = Color(0xFF3b0a58)
-
     Scaffold(
-        containerColor = backgroundColor,
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        "Notificaciones",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = darkText
-                    )
-                },
+                title = { Text("Notificaciones") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = darkText)
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                    scrolledContainerColor = Color.White
-                )
+                }
             )
         }
     ) { padding ->
-
-        Column(
+        Box(
             modifier = Modifier
-                .padding(padding)
                 .fillMaxSize()
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(padding)
+                .padding(24.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
-            Text(
-                text = "Configura la hora en la que deseas recibir recordatorios",
-                style = MaterialTheme.typography.bodyLarge,
-                color = darkText
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                text = "Hora actual: %02d:%02d".format(hour, minute),
-                style = MaterialTheme.typography.headlineSmall,
-                color = darkText
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { timePickerDialog.show() },
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(8.dp)
             ) {
-                Text("Seleccionar hora", color = Color.Black)
-            }
+                Column(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Configura tu recordatorio",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Hora actual: %02d:%02d".format(hour, minute),
+                        style = MaterialTheme.typography.titleMedium
+                    )
 
-            Button(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = buttonBlue)
-            ) {
-                Text("Confirmar", color = Color.Black)
+                    Button(
+                        onClick = { timePickerDialog.show() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    ) {
+                        Text("Seleccionar hora")
+                    }
+                    Button(
+                        onClick = {
+                            val intent = Intent(context, NotificationReceiver::class.java)
+                            context.sendBroadcast(intent)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    ) {
+                        Text("Probar Notificación")
+                    }
+                    Button(
+                        onClick = {
+                            viewModel.notificationTime.value.let { time ->
+                                Log.d("NotificationTimePicker", "Hora registrada: ${time.hour}, Minuto registrado: ${time.minute}")
+                                viewModel.setNotificationTime(context, time.hour, time.minute)
+                            }
+                            navController.popBackStack()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    ) {
+                        Text("Confirmar")
+                    }
+                }
             }
         }
     }

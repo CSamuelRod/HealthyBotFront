@@ -3,17 +3,14 @@ package com.example.healthybotfront.domain.usecase.notificationsUseCases
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.healthybotfront.domain.model.NotificationTime
-import com.example.healthybotfront.domain.repository.NotificationTimeRepository
 import com.example.healthybotfront.data.scheduler.DailyNotificationScheduler
+import com.example.healthybotfront.domain.model.NotificationTime
 
-class SetNotificationTimeUseCase(
-    private val repository: NotificationTimeRepository,
+class ScheduleNotificationUseCase(
     private val scheduler: DailyNotificationScheduler
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend operator fun invoke(context: Context, time: NotificationTime) {
-        repository.saveTime(time)
+    fun invoke(context: Context, time: NotificationTime) {
         scheduler.schedule(context, time.hour, time.minute)
     }
 }

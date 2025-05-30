@@ -1,18 +1,17 @@
-package com.example.healthybotfront.data.worker
+package com.example.healthybotfront.worker
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
 import androidx.work.Worker
+import androidx.work.WorkerParameters
 import com.example.healthybotfront.R
+import com.example.healthybotfront.data.scheduler.DailyNotificationScheduler
 
 class NotificationWorker(
-    context: Context,
+    private val context: Context,
     params: WorkerParameters
 ) : Worker(context, params) {
 
@@ -20,32 +19,36 @@ class NotificationWorker(
     private val notificationId = 1
 
     override fun doWork(): Result {
-        showNotification()
-        Log.d("NotificationWorker", "Worker ejecutado")
-        // Reprograma el siguiente día (si quieres)
-        return Result.success()
-    }
-
-    private fun showNotification() {
         val notificationManager =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
                 "Notificaciones Diarias",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             )
             notificationManager.createNotificationChannel(channel)
         }
 
-        val notification = NotificationCompat.Builder(applicationContext, channelId)
+        val notification = NotificationCompat.Builder(context, channelId)
             .setContentTitle("HealthyBot")
-            .setContentText("Es hora de tu notificación diaria!")
+            .setContentText("¡Es hora de registrar tus hábitos diarios!")
             .setSmallIcon(R.drawable.ic_notification)
             .setAutoCancel(true)
             .build()
 
         notificationManager.notify(notificationId, notification)
+
+        // Reprogramar la siguiente notificación usando la hora del usuario
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val hour = inputData.getInt("hour", 9)    // hora por defecto 9
+            val minute = inputData.getInt("minute", 0)
+
+            val scheduler = DailyNotificationScheduler()
+            scheduler.schedule(context, hour, minute)
+        }
+
+        return Result.success()
     }
 }
