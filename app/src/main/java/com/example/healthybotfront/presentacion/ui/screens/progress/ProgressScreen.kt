@@ -18,6 +18,13 @@ import com.example.healthybotfront.presentacion.viewmodel.GetProgressPercentageV
 import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 
+private val DarkColor = Color(0xFF3b0a58)
+private val LightColor = Color(0xFF5a3a84)
+private val AccentColor = Color(0xFFff3b5f)
+private val BackgroundPastel = Color(0xFFF0E6F7)
+private val CardBackground = Color.White
+private val ProgressBarColor = Color(0xFFff3b5f) // verde pastel suave
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProgressScreen(
@@ -40,7 +47,7 @@ fun ProgressScreen(
                 title = "Progreso mensual"
             )
         },
-        containerColor = Color(0xFFF1F8E9) // Fondo pastel verde claro
+        containerColor = BackgroundPastel
     ) { padding ->
         Column(
             modifier = Modifier
@@ -52,6 +59,7 @@ fun ProgressScreen(
                 text = "Tu progreso por hábito",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
+                color = DarkColor,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -61,7 +69,10 @@ fun ProgressScreen(
                     color = MaterialTheme.colorScheme.error
                 )
             } else if (progressList.isEmpty()) {
-                Text("No hay progreso disponible.")
+                Text(
+                    "No hay progreso disponible.",
+                    color = LightColor
+                )
             } else {
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -71,19 +82,21 @@ fun ProgressScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(Color.White, RoundedCornerShape(12.dp))
+                                .background(CardBackground, RoundedCornerShape(12.dp))
                                 .padding(16.dp)
                         ) {
                             Column {
                                 Text(
                                     text = progress.habitName ?: "Nombre no disponible",
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = DarkColor
                                 )
 
                                 Text(
                                     text = "Completado: ${progress.progressPercentage.roundToInt()}%",
                                     style = MaterialTheme.typography.bodyMedium,
+                                    color = LightColor,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
 
@@ -92,7 +105,8 @@ fun ProgressScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 8.dp),
-                                    color = Color(0xFF81C784) // verde suave
+                                    color = ProgressBarColor,
+                                    trackColor = ProgressBarColor.copy(alpha = 0.3f)
                                 )
                             }
                         }

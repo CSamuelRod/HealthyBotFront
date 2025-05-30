@@ -31,8 +31,14 @@ fun ProfileScreen(
         viewModel.loadUser(userId)
     }
 
+    // Colores estilo LoginScreen
+    val backgroundPastel = Color(0xFFF0E6F7)  // fondo lavanda pastel
+    val darkColor = Color(0xFF3b0a58)         // morado oscuro para texto y botones
+    val buttonPastel = Color(0xFFF8D1D9)       // rosa pastel para botones secundarios
+    val accentPastel = Color(0xFFff3b5f)       // rosa fuerte para acentos
+
     Scaffold(
-        containerColor = Color(0xFFF1F8E9), // Fondo claro pastel
+        containerColor = backgroundPastel,
         topBar = {
             TopAppBar(
                 title = {
@@ -40,17 +46,22 @@ fun ProfileScreen(
                         text = "Perfil de Usuario",
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = darkColor
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Volver"
+                            contentDescription = "Volver",
+                            tint = darkColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                )
             )
         },
         bottomBar = {
@@ -65,9 +76,9 @@ fun ProfileScreen(
                         navController.navigate(Screen.UpdateUser.createRoute(userId))
                     },
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC8E6C9))
+                    colors = ButtonDefaults.buttonColors(containerColor = buttonPastel)
                 ) {
-                    Text("Editar", color = Color.Black)
+                    Text("Editar", color = darkColor)
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -80,8 +91,8 @@ fun ProfileScreen(
                     },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFFFFCDD2),
-                        contentColor = Color.Black
+                        containerColor = Color(0xFFFFCDD2),  // un rosa claro, tipo error suave
+                        contentColor = darkColor
                     )
                 ) {
                     Text("Eliminar")
@@ -98,7 +109,7 @@ fun ProfileScreen(
         ) {
             when {
                 isLoading -> {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = accentPastel)
                 }
                 errorMessage != null -> {
                     Text(
@@ -117,7 +128,7 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .wrapContentHeight(),
-                            shape = RoundedCornerShape(20.dp),
+                            shape = RoundedCornerShape(24.dp),
                             elevation = CardDefaults.cardElevation(6.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
@@ -131,15 +142,17 @@ fun ProfileScreen(
                                 Text(
                                     text = user!!.name,
                                     style = MaterialTheme.typography.headlineMedium,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = darkColor
                                 )
                                 Text(
                                     text = user!!.lastName,
-                                    style = MaterialTheme.typography.titleMedium
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = darkColor.copy(alpha = 0.7f)
                                 )
                                 Text(
                                     text = user!!.email,
-                                    style = MaterialTheme.typography.bodyLarge
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = darkColor.copy(alpha = 0.6f)
                                 )
                             }
                         }
@@ -148,12 +161,12 @@ fun ProfileScreen(
                             onClick = {
                                 navController.navigate(Screen.NotificationsPicker.route)
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBBDEFB)),
+                            colors = ButtonDefaults.buttonColors(containerColor = accentPastel),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(48.dp)
                         ) {
-                            Text("Configurar Notificaciones", color = Color.Black)
+                            Text("Configurar Notificaciones", color = Color.White)
                         }
                     }
                 }

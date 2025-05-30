@@ -28,7 +28,7 @@ interface HabitApi {
         @Body habitDto: HabitDto
     ): HabitDto
 
-
     @DELETE("/api/habits/{habitId}")
-    suspend fun delete(@Path("habitId") habitId: Long)
+    suspend fun delete(@Path("habitId") habitId: Long): retrofit2.Response<Unit>
+
 }

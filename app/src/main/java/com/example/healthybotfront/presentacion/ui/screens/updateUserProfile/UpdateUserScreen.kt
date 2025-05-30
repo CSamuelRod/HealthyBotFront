@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.healthybotfront.data.source.remote.dto.UserDto
@@ -34,7 +35,6 @@ fun UpdateUserScreen(
         viewModel.loadUser(userId)
     }
 
-    // Prepopulate form fields once user is loaded
     LaunchedEffect(user) {
         user?.let {
             name = TextFieldValue(it.name)
@@ -43,8 +43,14 @@ fun UpdateUserScreen(
         }
     }
 
+    // 🎨 Estilo pastel unificado
+    val backgroundColor = Color(0xFFF0E6F7)
+    val darkColor = Color(0xFF3b0a58)
+    val cardColor = Color.White
+    val saveButtonColor = Color(0xFFC8E6C9)
+
     Scaffold(
-        containerColor = Color(0xFFF1F8E9),
+        containerColor = backgroundColor,
         topBar = {
             TopAppBar(
                 title = {
@@ -52,14 +58,20 @@ fun UpdateUserScreen(
                         text = "Editar Perfil",
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = darkColor
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = darkColor
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = cardColor)
             )
         }
     ) { innerPadding ->
@@ -71,52 +83,73 @@ fun UpdateUserScreen(
             contentAlignment = Alignment.TopCenter
         ) {
             if (isLoading) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = darkColor)
             } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = cardColor),
+                    elevation = CardDefaults.cardElevation(6.dp),
+                    shape = RoundedCornerShape(24.dp)
                 ) {
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = { Text("Nombre") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                        value = lastName,
-                        onValueChange = { lastName = it },
-                        label = { Text("Apellido") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("Correo electrónico") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Button(
-                        onClick = {
-                            val updatedUser = UserDto(
-                                id = userId,
-                                name = name.text,
-                                lastName = lastName.text,
-                                email = email.text,
-                                registrationDate = null
-                            )
-
-                            viewModel.updateUser(userId, updatedUser)
-                            navController.popBackStack()
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC8E6C9))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
-                        Text("Guardar Cambios", color = Color.Black)
+                        OutlinedTextField(
+                            value = name,
+                            onValueChange = { name = it },
+                            label = { Text("Nombre") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = darkColor,
+                                cursorColor = darkColor,
+                                focusedLabelColor = darkColor
+                            )
+                        )
+
+                        OutlinedTextField(
+                            value = lastName,
+                            onValueChange = { lastName = it },
+                            label = { Text("Apellido") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = darkColor,
+                                cursorColor = darkColor,
+                                focusedLabelColor = darkColor
+                            )
+                        )
+
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            label = { Text("Correo electrónico") },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = darkColor,
+                                cursorColor = darkColor,
+                                focusedLabelColor = darkColor
+                            )
+                        )
+
+                        Button(
+                            onClick = {
+                                val updatedUser = UserDto(
+                                    id = userId,
+                                    name = name.text,
+                                    lastName = lastName.text,
+                                    email = email.text,
+                                    registrationDate = null
+                                )
+                                viewModel.updateUser(userId, updatedUser)
+                                navController.popBackStack()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = darkColor)
+                        ) {
+                            Text("Guardar Cambios", color = Color.White)
+                        }
                     }
                 }
             }

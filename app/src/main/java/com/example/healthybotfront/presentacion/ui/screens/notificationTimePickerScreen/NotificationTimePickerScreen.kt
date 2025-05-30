@@ -3,24 +3,11 @@ package com.example.healthybotfront.presentacion.ui.screens.notificationTimePick
 import android.app.TimePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,24 +17,22 @@ import androidx.navigation.NavController
 import com.example.healthybotfront.presentacion.viewmodel.NotificationViewModel
 import org.koin.androidx.compose.koinViewModel
 
-
-
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationTimePickerScreen(
     navController: NavController,
     viewModel: NotificationViewModel = koinViewModel()
 ) {
     val notificationTime by viewModel.notificationTime.collectAsState()
-
     val (hour, minute) = notificationTime
     val context = LocalContext.current
+
     val timePickerDialog = remember {
         TimePickerDialog(
             context,
             { _, selectedHour, selectedMinute ->
-                viewModel.setNotificationTime(context, selectedHour, selectedMinute) // Pasa context aquí
+                viewModel.setNotificationTime(context, selectedHour, selectedMinute)
             },
             hour,
             minute,
@@ -55,36 +40,66 @@ fun NotificationTimePickerScreen(
         )
     }
 
+    // 🎨 Colores pastel
+    val backgroundColor = Color(0xFFECEFF1)
+    val buttonGreen = Color(0xFFC8E6C9)
+    val buttonBlue = Color(0xFFB3E5FC)
+    val darkText = Color(0xFF3b0a58)
+
     Scaffold(
+        containerColor = backgroundColor,
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Configurar hora de notificación") }
+            TopAppBar(
+                title = {
+                    Text(
+                        "Notificaciones",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = darkText
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = darkText)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    scrolledContainerColor = Color.White
+                )
             )
-        },
-        containerColor = Color(0xFFF1F8E9)
+        }
     ) { padding ->
 
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                text = "Configura la hora en la que deseas recibir recordatorios",
+                style = MaterialTheme.typography.bodyLarge,
+                color = darkText
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             Text(
                 text = "Hora actual: %02d:%02d".format(hour, minute),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
+                style = MaterialTheme.typography.headlineSmall,
+                color = darkText
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = { timePickerDialog.show() },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC8E6C9)),
-                modifier = Modifier.fillMaxWidth(0.5f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = buttonGreen)
             ) {
                 Text("Seleccionar hora", color = Color.Black)
             }
@@ -93,10 +108,12 @@ fun NotificationTimePickerScreen(
 
             Button(
                 onClick = { navController.popBackStack() },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCCE5FF)),
-                modifier = Modifier.fillMaxWidth(0.5f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = buttonBlue)
             ) {
-                Text("Volver")
+                Text("Confirmar", color = Color.Black)
             }
         }
     }

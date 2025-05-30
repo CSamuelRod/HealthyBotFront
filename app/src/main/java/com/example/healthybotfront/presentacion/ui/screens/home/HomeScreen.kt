@@ -28,6 +28,12 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 
+private val DarkColor = Color(0xFF3b0a58)         // oscuro base (igual que login)
+private val LightColor = Color(0xFF5a3a84)        // claro base (igual que login)
+private val AccentColor = Color(0xFFff3b5f)       // color acento (igual que login)
+private val BackgroundPastel = Color(0xFFF0E6F7)  // fondo pastel suave (igual que login)
+private val ButtonPastel = Color(0xFFF8D1D9)      // botones pastel (igual que login)
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
@@ -42,8 +48,7 @@ fun HomeScreen(
     val user by profileViewModel.user.collectAsState()
 
     val currentDate = LocalDate.now()
-    val currentDayName = currentDate
-        .dayOfWeek
+    val currentDayName = currentDate.dayOfWeek
         .getDisplayName(TextStyle.FULL, Locale("es"))
         .replaceFirstChar { it.uppercaseChar() }
     val formattedDate = currentDate.format(DateTimeFormatter.ofPattern("dd/MM"))
@@ -84,7 +89,8 @@ fun HomeScreen(
                     Icon(
                         imageVector = Icons.Default.AccountCircle,
                         contentDescription = "Perfil",
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(32.dp),
+                        tint = DarkColor
                     )
                 }
             }
@@ -101,22 +107,24 @@ fun HomeScreen(
                 }) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Agregar"
+                        contentDescription = "Agregar",
+                        tint = DarkColor
                     )
                 }
                 TextButton(onClick = {
                     navController.navigate(Screen.Progress.createRoute(userId))
                 }) {
-                    Text("Progreso")
+                    Text("Progreso", color = DarkColor)
                 }
             }
         },
-        containerColor = Color(0xFFF1F8E9)
+        containerColor = BackgroundPastel
     ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .background(BackgroundPastel)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -124,6 +132,7 @@ fun HomeScreen(
             Text(
                 text = "Hola, ${user?.name ?: "usuario"} 👋",
                 style = MaterialTheme.typography.headlineSmall,
+                color = DarkColor,
                 modifier = Modifier.padding(top = 16.dp)
             )
 
@@ -132,13 +141,14 @@ fun HomeScreen(
             Text(
                 text = "$currentDayName - $formattedDate",
                 style = MaterialTheme.typography.titleLarge,
+                color = DarkColor,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             if (error != null) {
-                Text(text = "Error: $error", color = MaterialTheme.colorScheme.error)
+                Text(text = "Error: $error", color = Color.Red)
             }
 
             habits.forEach { habit ->
@@ -146,7 +156,7 @@ fun HomeScreen(
                 val isChecked = checkStates[habitId] ?: false
                 val note = notesMap[habitId] ?: ""
                 val showControls = showControlsMap[habitId] ?: false
-
+                val hasSavedProgress = progressIdMap[habitId] != null
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -163,14 +173,11 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = habit.name,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                            Text(text = habit.name, style = MaterialTheme.typography.bodyLarge, color = DarkColor)
                             Text(
                                 text = habit.description,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = LightColor
                             )
                         }
                         Checkbox(
@@ -180,15 +187,17 @@ fun HomeScreen(
                                 showControlsMap[habitId] = checked
 
                                 if (!checked) {
-                                    // Eliminar progreso si desmarcado
                                     progressIdMap[habitId]?.let { progressId ->
                                         progressViewModel.deleteProgress(progressId)
                                         progressIdMap.remove(habitId)
                                     }
                                     notesMap[habitId] = ""
                                 }
-                                // Ya no se guarda automáticamente al marcar
-                            }
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = AccentColor,
+                                uncheckedColor = LightColor
+                            )
                         )
                     }
 
@@ -196,7 +205,8 @@ fun HomeScreen(
                         OutlinedTextField(
                             value = note,
                             onValueChange = { notesMap[habitId] = it },
-                            label = { Text("Nota (opcional)") },
+                            label = { Text("Nota (opcional)", color = DarkColor) },
+
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 8.dp)
@@ -214,18 +224,18 @@ fun HomeScreen(
                                         habitViewModel.getHabits(userId)
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFD6D6))
+                                colors = ButtonDefaults.buttonColors(containerColor = ButtonPastel)
                             ) {
-                                Text("Eliminar")
+                                Text("Eliminar", color = DarkColor)
                             }
 
                             Button(
                                 onClick = {
                                     navController.navigate(Screen.UpdateHabit.createRoute(habitId))
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCCE5FF))
+                                colors = ButtonDefaults.buttonColors(containerColor = ButtonPastel)
                             ) {
-                                Text("Modificar")
+                                Text("Modificar", color = DarkColor)
                             }
 
                             Button(
@@ -237,13 +247,14 @@ fun HomeScreen(
                                         onError = { println("Error guardando progreso: $it") }
                                     )
                                     showControlsMap[habitId] = false
-                                    checkStates[habitId] = true // Marcar como completado tras guardar
-                                    // Idealmente actualizar también progressIdMap si tienes callback
+                                    checkStates[habitId] = true
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD5F5E3))
+                                enabled = isChecked && !hasSavedProgress,  // Sólo habilitado si está checked y NO hay progreso guardado
+                                colors = ButtonDefaults.buttonColors(containerColor = ButtonPastel)
                             ) {
-                                Text("Guardar")
+                                Text("Guardar", color = DarkColor)
                             }
+
                         }
                     }
                 }

@@ -24,7 +24,6 @@ import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.*
-
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,19 +41,14 @@ fun CreateHabitScreen(
     var objective by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
 
-    // Opciones mostradas en español (UI)
     val displayFrequencyOptions = listOf("Diario", "Semanal", "Mensual")
-
-    // Mapeo a valores para backend en inglés
     val frequencyMap = mapOf(
         "Diario" to "DAILY",
         "Semanal" to "WEEKLY",
         "Mensual" to "MONTHLY"
     )
-
     var selectedDisplayFrequency by remember { mutableStateOf(displayFrequencyOptions[0]) }
     var expanded by remember { mutableStateOf(false) }
-
     var showError by remember { mutableStateOf(false) }
 
     val calendar = Calendar.getInstance()
@@ -74,16 +68,20 @@ fun CreateHabitScreen(
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
             ).apply {
-                setOnCancelListener {
-                    showDatePicker = false
-                }
+                setOnCancelListener { showDatePicker = false }
             }.show()
         }
     }
 
+    // 🎨 Colores pastel coherentes
+    val backgroundColor = Color(0xFFF0E6F7)
+    val cardColor = Color.White
+    val darkColor = Color(0xFF3b0a58)
+    val buttonColor = Color(0xFFC8E6C9)
+    val errorColor = MaterialTheme.colorScheme.error
 
     Scaffold(
-        containerColor = Color(0xFFE8F5E9),
+        containerColor = backgroundColor,
         topBar = {
             TopBarWithProfile(
                 navController = navController,
@@ -103,24 +101,29 @@ fun CreateHabitScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight(),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = cardColor),
+                elevation = CardDefaults.cardElevation(8.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .padding(24.dp)
                         .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Nuevo Hábito", style = MaterialTheme.typography.headlineSmall)
+                    Text("Nuevo Hábito", style = MaterialTheme.typography.headlineSmall, color = darkColor)
 
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
                         label = { Text("Nombre del hábito") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = darkColor,
+                            cursorColor = darkColor,
+                            focusedLabelColor = darkColor
+                        )
                     )
 
                     OutlinedTextField(
@@ -128,21 +131,30 @@ fun CreateHabitScreen(
                         onValueChange = { description = it },
                         label = { Text("Descripción") },
                         modifier = Modifier.fillMaxWidth(),
-                        maxLines = 4
+                        maxLines = 4,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = darkColor,
+                            cursorColor = darkColor,
+                            focusedLabelColor = darkColor
+                        )
                     )
 
-                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+                    Divider()
 
-                    Text("Meta Asociada", style = MaterialTheme.typography.titleMedium)
+                    Text("Meta Asociada", style = MaterialTheme.typography.titleMedium, color = darkColor)
 
                     OutlinedTextField(
                         value = objective,
                         onValueChange = { objective = it },
                         label = { Text("Objetivo de la meta") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = darkColor,
+                            cursorColor = darkColor,
+                            focusedLabelColor = darkColor
+                        )
                     )
 
-                    // Dropdown frecuencia (UI en español, backend en inglés)
                     ExposedDropdownMenuBox(
                         expanded = expanded,
                         onExpandedChange = { expanded = !expanded }
@@ -155,7 +167,12 @@ fun CreateHabitScreen(
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
                             modifier = Modifier
                                 .menuAnchor()
-                                .fillMaxWidth()
+                                .fillMaxWidth(),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = darkColor,
+                                cursorColor = darkColor,
+                                focusedLabelColor = darkColor
+                            )
                         )
 
                         ExposedDropdownMenu(
@@ -182,14 +199,17 @@ fun CreateHabitScreen(
                             .fillMaxWidth()
                             .clickable { showDatePicker = true },
                         readOnly = true,
-                        enabled = true
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = darkColor,
+                            cursorColor = darkColor,
+                            focusedLabelColor = darkColor
+                        )
                     )
-
 
                     if (showError || errorMessage != null) {
                         Text(
                             text = errorMessage ?: "Completa todos los campos correctamente.",
-                            color = MaterialTheme.colorScheme.error,
+                            color = errorColor,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
@@ -198,26 +218,23 @@ fun CreateHabitScreen(
 
                     Button(
                         onClick = {
-                            if (name.isNotBlank() && description.isNotBlank()
-                                && objective.isNotBlank() && endDate.isNotBlank()
+                            if (name.isNotBlank() && description.isNotBlank() &&
+                                objective.isNotBlank() && endDate.isNotBlank()
                             ) {
                                 val habit = HabitDto(
                                     name = name,
                                     description = description,
                                     userId = userId
                                 )
-
                                 habitViewModel.createHabit(habit) { createdHabit ->
                                     val goal = GoalDto(
                                         goalId = null,
                                         habit_id = createdHabit.habitId!!,
                                         objective = objective,
-                                        // Aquí enviamos la frecuencia en inglés
                                         frequency = frequencyMap[selectedDisplayFrequency] ?: "DAILY",
                                         startDate = LocalDate.now().toString(),
                                         endDate = endDate
                                     )
-
                                     goalViewModel.create(goal)
                                     Toast.makeText(context, "Hábito y meta creados correctamente", Toast.LENGTH_SHORT).show()
                                     navController.popBackStack()
@@ -229,9 +246,9 @@ fun CreateHabitScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF81C784))
+                        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
                     ) {
-                        Text("Guardar hábito y meta", color = Color.White)
+                        Text("Guardar hábito y meta", color = darkColor)
                     }
                 }
             }

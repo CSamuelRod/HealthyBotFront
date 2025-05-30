@@ -22,8 +22,11 @@ class HabitRepository(
         return habitApi.updateHabit(habitId, habitDto)
     }
 
-
-    suspend fun deleteHabitById(habitId : Long){
-        return habitApi.delete(habitId)
+    suspend fun deleteHabitById(habitId : Long) {
+        val response = habitApi.delete(habitId)
+        if (!response.isSuccessful) {
+            throw Exception("Error en el servidor al eliminar hábito")
+        }
     }
+
 }

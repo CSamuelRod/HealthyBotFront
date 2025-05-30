@@ -21,6 +21,13 @@ import com.example.healthybotfront.presentacion.navigation.Screen
 import com.example.healthybotfront.presentacion.viewmodel.LoginViewModel
 import org.koin.androidx.compose.koinViewModel
 
+// Colores basados en los códigos proporcionados con tonos pastel y planos
+private val DarkColor = Color(0xFF3b0a58)         // oscuro base
+private val LightColor = Color(0xFF5a3a84)        // claro base
+private val AccentColor = Color(0xFFff3b5f)       // color acento (letra app)
+private val BackgroundPastel = Color(0xFFF0E6F7)  // pastel suave derivado de oscuro
+private val ButtonPastel = Color(0xFFF8D1D9)      // pastel suave derivado de acento
+
 @Composable
 fun LoginScreen(
     navController: NavController,
@@ -32,7 +39,6 @@ fun LoginScreen(
     val error by viewModel.error.collectAsState()
     val isFormValid = email.isNotBlank() && password.isNotBlank()
 
-
     LaunchedEffect(userId) {
         if (userId != null && userId != -1L) {
             println("Exitoso login con id : $userId")
@@ -40,10 +46,9 @@ fun LoginScreen(
         }
     }
 
-
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF1F8E9)
+        color = BackgroundPastel
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -63,7 +68,6 @@ fun LoginScreen(
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Logo decorativo
                     Image(
                         painter = painterResource(R.drawable.bienvenido),
                         contentDescription = "Logo",
@@ -71,34 +75,44 @@ fun LoginScreen(
                             .size(80.dp)
                             .padding(bottom = 12.dp)
                     )
-
+// Cambia el color del texto del título:
                     Text(
                         text = "Bienvenido a HealthyBot",
                         style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = DarkColor,     // <-- Aquí usas AccentColor
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
-
+// Cambia el color de los iconos en los TextFields:
                     OutlinedTextField(
                         value = email,
                         onValueChange = viewModel::setEmail,
                         label = { Text("Correo electrónico") },
-                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = AccentColor) },  // <-- AccentColor
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AccentColor,
+                            unfocusedBorderColor = LightColor,
+                            focusedLabelColor = AccentColor,
+                            cursorColor = AccentColor
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
-
-                    Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
                         value = password,
                         onValueChange = viewModel::setPassword,
                         label = { Text("Contraseña") },
-                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = AccentColor) },  // <-- AccentColor
                         visualTransformation = PasswordVisualTransformation(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AccentColor,
+                            unfocusedBorderColor = LightColor,
+                            focusedLabelColor = AccentColor,
+                            cursorColor = AccentColor
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
+
 
                     TextButton(
                         onClick = { navController.navigate(Screen.ForgotPassword.route) },
@@ -106,9 +120,8 @@ fun LoginScreen(
                             .align(Alignment.End)
                             .padding(top = 4.dp)
                     ) {
-                        Text("¿Olvidaste tu contraseña?", color = MaterialTheme.colorScheme.primary)
+                        Text("¿Olvidaste tu contraseña?", color = DarkColor)
                     }
-
 
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -117,11 +130,12 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxWidth(),
                         enabled = isFormValid,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFC8E6C9) // verde pastel
+                            containerColor = ButtonPastel
                         )
                     ) {
-                        Text("Iniciar sesión", color = Color.Black)
+                        Text("Iniciar sesión", color = DarkColor)
                     }
+
                     if (error.isNotBlank()) {
                         Text(
                             text = error,
@@ -134,21 +148,20 @@ fun LoginScreen(
                         )
                     }
 
-
                     Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedButton(
                         onClick = { navController.navigate(Screen.Register.route) },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = Color(0xFFBBDEFB) // azul pastel
+                            containerColor = LightColor.copy(alpha = 0.15f),
+                            contentColor = DarkColor
                         )
                     ) {
-                        Text("Registrarse", color = Color.Black)
+                        Text("Registrarse")
                     }
                 }
             }
         }
     }
 }
-

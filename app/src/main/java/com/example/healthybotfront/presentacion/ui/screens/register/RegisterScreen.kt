@@ -23,6 +23,12 @@ import com.example.healthybotfront.presentacion.navigation.Screen
 import com.example.healthybotfront.presentacion.viewmodel.RegisterViewModel
 import org.koin.androidx.compose.koinViewModel
 
+private val DarkColor = Color(0xFF3b0a58)
+private val LightColor = Color(0xFF5a3a84)
+private val AccentColor = Color(0xFFff3b5f)
+private val BackgroundPastel = Color(0xFFF0E6F7)
+private val ButtonPastel = Color(0xFFF8D1D9)
+
 @Composable
 fun RegisterScreen(
     navController: NavController,
@@ -32,14 +38,12 @@ fun RegisterScreen(
     val registerResult by viewModel.registerState.collectAsState()
     val isRegistrationSuccessful by viewModel.isRegistrationSuccessful.collectAsState()
 
-
     var showErrorDialog by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
     var lastname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    // Bind data to ViewModel
     LaunchedEffect(name) { viewModel.setName(name) }
     LaunchedEffect(lastname) { viewModel.setLastname(lastname) }
     LaunchedEffect(email) { viewModel.setEmail(email) }
@@ -58,10 +62,9 @@ fun RegisterScreen(
         }
     }
 
-    // UI principal
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFE8F5E9) // fondo verde pastel
+        color = BackgroundPastel
     ) {
         Column(
             modifier = Modifier
@@ -93,7 +96,7 @@ fun RegisterScreen(
                     Text(
                         text = "Crea tu cuenta",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary
+                        color = DarkColor
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -103,7 +106,13 @@ fun RegisterScreen(
                         onValueChange = { name = it },
                         label = { Text("Nombre") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AccentColor,
+                            unfocusedBorderColor = LightColor,
+                            focusedLabelColor = AccentColor,
+                            cursorColor = AccentColor
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -113,7 +122,13 @@ fun RegisterScreen(
                         onValueChange = { lastname = it },
                         label = { Text("Apellido") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AccentColor,
+                            unfocusedBorderColor = LightColor,
+                            focusedLabelColor = AccentColor,
+                            cursorColor = AccentColor
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -122,10 +137,16 @@ fun RegisterScreen(
                         value = email,
                         onValueChange = { email = it },
                         label = { Text("Correo electrónico") },
-                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = AccentColor) },
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AccentColor,
+                            unfocusedBorderColor = LightColor,
+                            focusedLabelColor = AccentColor,
+                            cursorColor = AccentColor
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -134,11 +155,17 @@ fun RegisterScreen(
                         value = password,
                         onValueChange = { password = it },
                         label = { Text("Contraseña") },
-                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = AccentColor) },
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                         visualTransformation = PasswordVisualTransformation(),
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AccentColor,
+                            unfocusedBorderColor = LightColor,
+                            focusedLabelColor = AccentColor,
+                            cursorColor = AccentColor
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -149,7 +176,11 @@ fun RegisterScreen(
                     ) {
                         OutlinedButton(
                             onClick = { navController.popBackStack() },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = LightColor.copy(alpha = 0.15f),
+                                contentColor = DarkColor
+                            )
                         ) {
                             Text("Cancelar")
                         }
@@ -157,27 +188,24 @@ fun RegisterScreen(
                         Spacer(modifier = Modifier.width(16.dp))
 
                         Button(
-                            onClick = {
-                                viewModel.register()
-                            },
+                            onClick = { viewModel.register() },
                             modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF81C784))
+                            colors = ButtonDefaults.buttonColors(containerColor = ButtonPastel)
                         ) {
-                            Text("Guardar", color = Color.White)
+                            Text("Guardar", color = DarkColor)
                         }
-
                     }
-                    // Error Dialog
+
                     if (showErrorDialog) {
                         AlertDialog(
                             onDismissRequest = { showErrorDialog = false },
                             confirmButton = {
                                 TextButton(onClick = { showErrorDialog = false }) {
-                                    Text("Aceptar")
+                                    Text("Aceptar", color = AccentColor)
                                 }
                             },
-                            title = { Text("Error de Registro") },
-                            text = { Text(registerResult) },
+                            title = { Text("Error de Registro", color = DarkColor) },
+                            text = { Text(registerResult, color = DarkColor) },
                             containerColor = Color.White
                         )
                     }
