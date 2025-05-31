@@ -15,7 +15,7 @@ interface UserApi {
     ): UserDto
 
     @DELETE("/api/users/{id}")
-    suspend fun deleteUser(@Path("id") userId: Long)
+    suspend fun deleteUser(@Path("id") userId: Long) : retrofit2.Response<Unit>
 
     @PUT("/api/users/reset-password")
     suspend fun resetPassword(@Body request: LoginRequest) : LoginRequest

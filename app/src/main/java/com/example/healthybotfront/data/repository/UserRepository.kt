@@ -13,7 +13,12 @@ class UserRepository(
     suspend fun updateUser(userId: Long, userDto: UserDto): UserDto =
         userApi.updateUser(userId, userDto)
 
-    suspend fun deleteUser(userId: Long) = userApi.deleteUser(userId)
+    suspend fun deleteUser(userId: Long) {
+        val response = userApi.deleteUser(userId)
+        if (!response.isSuccessful) {
+            throw Exception("Error al eliminar el usuario")
+        }
+    }
 
     suspend fun resetPassword(email: String, newPassword: String): LoginRequest {
         val request = LoginRequest(email, newPassword)
