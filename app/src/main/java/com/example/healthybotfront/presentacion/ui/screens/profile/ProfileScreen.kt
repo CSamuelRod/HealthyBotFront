@@ -26,6 +26,7 @@ fun ProfileScreen(
     val user by viewModel.user.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    var showConfirmationDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(userId) {
         viewModel.loadUser(userId)
@@ -85,13 +86,11 @@ fun ProfileScreen(
 
                 OutlinedButton(
                     onClick = {
-                        viewModel.deleteUser(userId) {
-                            navController.navigate(Screen.Login.route)
-                        }
+                        showConfirmationDialog = true
                     },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFFFFCDD2),  // un rosa claro, tipo error suave
+                        containerColor = Color(0xFFFFCDD2),
                         contentColor = darkColor
                     )
                 ) {
@@ -111,6 +110,7 @@ fun ProfileScreen(
                 isLoading -> {
                     CircularProgressIndicator(color = accentPastel)
                 }
+
                 errorMessage != null -> {
                     Text(
                         text = errorMessage ?: "",
@@ -118,6 +118,7 @@ fun ProfileScreen(
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
+
                 user != null -> {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -171,6 +172,34 @@ fun ProfileScreen(
                     }
                 }
             }
+
+            if (showConfirmationDialog) {
+                AlertDialog(
+                    onDismissRequest = { showConfirmationDialog = false },
+                    title = { Text("Confirmar eliminación") },
+                    text = { Text("¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.") },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showConfirmationDialog = false
+                                viewModel.deleteUser(userId) {
+                                    navController.navigate(Screen.Login.route) {
+                                        popUpTo(0)
+                                    }
+                                }
+                            }
+                        ) {
+                            Text("Sí, eliminar", color = Color.Red)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showConfirmationDialog = false }) {
+                            Text("Cancelar")
+                        }
+                    }
+                )
+            }
+
         }
 
     }
