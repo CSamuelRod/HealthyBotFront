@@ -191,20 +191,28 @@ fun CreateHabitScreen(
                         }
                     }
 
-                    OutlinedTextField(
-                        value = endDate,
-                        onValueChange = {},
-                        label = { Text("Fecha fin (YYYY-MM-DD)") },
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { showDatePicker = true },
-                        readOnly = true,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = darkColor,
-                            cursorColor = darkColor,
-                            focusedLabelColor = darkColor
+                            .clickable { showDatePicker = true }
+                    ) {
+                        OutlinedTextField(
+                            value = endDate,
+                            onValueChange = {},
+                            label = { Text("Fecha fin") },
+                            readOnly = true,
+                            enabled = false, // opcional, para que no se active el teclado ni focusee
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = darkColor,
+                                cursorColor = darkColor,
+                                focusedLabelColor = darkColor ,
+                                disabledBorderColor = darkColor,
+                                disabledLabelColor = darkColor
+                            )
                         )
-                    )
+                    }
+
 
                     if (showError || errorMessage != null) {
                         Text(

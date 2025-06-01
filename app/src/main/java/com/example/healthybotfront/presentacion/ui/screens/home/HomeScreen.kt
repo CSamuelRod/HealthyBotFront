@@ -221,6 +221,7 @@ fun HomeScreen(
                     if (showControls) {
                         OutlinedTextField(
                             value = note,
+                            enabled = isChecked,
                             onValueChange = { notesMap[habitId] = it },
                             label = { Text("Nota (opcional)", color = DarkColor) },
 
