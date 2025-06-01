@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -80,6 +81,22 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .statusBarsPadding()
             ) {
+                // Botón de Logout (izquierda)
+                IconButton(
+                    onClick = {
+                        navController.navigate(Screen.Login.route)
+                    },
+                    modifier = Modifier.align(Alignment.TopStart)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Cerrar sesión",
+                        modifier = Modifier.size(28.dp),
+                        tint = DarkColor
+                    )
+                }
+
+                // Botón de Perfil (derecha)
                 IconButton(
                     onClick = {
                         navController.navigate(Screen.Profile.createRoute(userId))
