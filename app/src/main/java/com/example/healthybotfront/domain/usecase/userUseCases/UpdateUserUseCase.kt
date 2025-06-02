@@ -3,12 +3,22 @@ package com.example.healthybotfront.domain.usecase.userUseCases
 import com.example.healthybotfront.data.repository.UserRepository
 import com.example.healthybotfront.data.source.remote.dto.UserDto
 
+/**
+ * Caso de uso para actualizar la información de un usuario.
+ *
+ * @property repository Repositorio que maneja las operaciones relacionadas con el usuario.
+ */
 class UpdateUserUseCase(
     private val repository: UserRepository
 ) {
-    // En el UseCase
+    /**
+     * Actualiza los datos de un usuario específico.
+     *
+     * @param userId ID del usuario a actualizar.
+     * @param updated Objeto [UserDto] con la información actualizada.
+     * @return El usuario actualizado como [UserDto].
+     */
     suspend fun updateUser(userId: Long, updated: UserDto): UserDto {
-        // Aquí llamas al Repository que va a hacer el update en la base de datos
         return repository.updateUser(userId, updated)
     }
 }

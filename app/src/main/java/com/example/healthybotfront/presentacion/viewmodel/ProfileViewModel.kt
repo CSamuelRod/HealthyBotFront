@@ -13,27 +13,40 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel que maneja la lógica de negocio relacionada con el perfil del usuario.
+ *
+ * @property getUser Caso de uso para obtener los datos del usuario.
+ * @property updateUser Caso de uso para actualizar los datos del usuario.
+ * @property deleteUser Caso de uso para eliminar un usuario.
+ */
 class ProfileViewModel(
     private val getUser: GetUserUseCase,
     private val updateUser: UpdateUserUseCase,
     private val deleteUser: DeleteUserUseCase
 ) : ViewModel() {
 
+    /** Estado que contiene los datos actuales del usuario, puede ser null si no se ha cargado aún. */
     private val _user = MutableStateFlow<UserDto?>(null)
     val user = _user.asStateFlow()
 
-    // Estado para manejar el error
+    /** Estado para manejar mensajes de error en las operaciones con usuario. */
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
 
-    // Estado para manejar el estado de carga
+    /** Estado que indica si se está realizando una operación que toma tiempo (cargando). */
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
+    /** Estado que indica si la actualización del usuario fue exitosa. */
     private val _updateSuccess = MutableStateFlow(false)
     val updateSuccess: StateFlow<Boolean> = _updateSuccess
 
-    // Cargar el usuario
+    /**
+     * Carga los datos del usuario dado su ID.
+     *
+     * @param userId ID del usuario a cargar.
+     */
     fun loadUser(userId: Long) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -47,15 +60,20 @@ class ProfileViewModel(
         }
     }
 
-    // Actualizar usuario
+    /**
+     * Actualiza los datos del usuario con la información proporcionada.
+     *
+     * @param userId ID del usuario a actualizar.
+     * @param updated Datos actualizados del usuario.
+     */
     fun updateUser(userId: Long, updated: UserDto) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val updatedUser = updateUser.updateUser(userId, updated)
                 _user.value = updatedUser
-                _errorMessage.value = null // Limpia errores previos
-                _updateSuccess.value = true // Indica que la actualización fue exitosa
+                _errorMessage.value = null
+                _updateSuccess.value = true
             } catch (e: Exception) {
                 _errorMessage.value = when {
                     e is HttpException && e.code() == 409 ->
@@ -65,18 +83,27 @@ class ProfileViewModel(
                     else ->
                         "Error al actualizar el usuario: ${e.message}"
                 }
-                _updateSuccess.value = false // Resetea el flag en caso de error
+                _updateSuccess.value = false
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    // Método para resetear el flag después de navegar
+    /**
+     * Reinicia el flag que indica que la actualización fue exitosa,
+     * para ser usado después de navegar o mostrar un mensaje.
+     */
     fun resetUpdateSuccess() {
         _updateSuccess.value = false
     }
-    // Eliminar usuario
+
+    /**
+     * Elimina al usuario indicado por su ID.
+     *
+     * @param userId ID del usuario a eliminar.
+     * @param onSuccess Callback a ejecutar en caso de eliminación exitosa.
+     */
     fun deleteUser(userId: Long, onSuccess: () -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true

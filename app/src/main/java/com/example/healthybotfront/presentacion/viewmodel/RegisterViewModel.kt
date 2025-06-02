@@ -7,15 +7,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel que maneja la lógica de registro de usuarios.
+ *
+ * @property registerUseCase Caso de uso para registrar un nuevo usuario.
+ */
 class RegisterViewModel(
     private val registerUseCase: RegisterUseCase
 ) : ViewModel() {
 
-    // Estado del formulario
+    /** Estado que representa el resultado o error del registro */
     private val _registerState = MutableStateFlow<String>("")
     val registerState: StateFlow<String> = _registerState
 
-    // Los datos del formulario
+    /** Campos del formulario de registro */
     private val _name = MutableStateFlow("")
     private val _lastname = MutableStateFlow("")
     private val _email = MutableStateFlow("")
@@ -26,26 +31,51 @@ class RegisterViewModel(
     val email: StateFlow<String> = _email
     val password: StateFlow<String> = _password
 
-    // Usamos setters para actualizar cada campo del formulario
+    /** Flag que indica si el registro fue exitoso */
+    private val _isRegistrationSuccessful = MutableStateFlow(false)
+    val isRegistrationSuccessful: StateFlow<Boolean> = _isRegistrationSuccessful
+
+    /**
+     * Actualiza el nombre en el formulario.
+     *
+     * @param name Nuevo nombre.
+     */
     fun setName(name: String) {
         _name.value = name
     }
 
+    /**
+     * Actualiza el apellido en el formulario.
+     *
+     * @param lastname Nuevo apellido.
+     */
     fun setLastname(lastname: String) {
         _lastname.value = lastname
     }
 
+    /**
+     * Actualiza el correo electrónico en el formulario.
+     *
+     * @param email Nuevo correo electrónico.
+     */
     fun setEmail(email: String) {
         _email.value = email
     }
 
+    /**
+     * Actualiza la contraseña en el formulario.
+     *
+     * @param password Nueva contraseña.
+     */
     fun setPassword(password: String) {
         _password.value = password
     }
 
-    private val _isRegistrationSuccessful = MutableStateFlow(false)
-    val isRegistrationSuccessful: StateFlow<Boolean> = _isRegistrationSuccessful
-
+    /**
+     * Valida que todos los campos del formulario cumplan con los requisitos.
+     *
+     * @return Mensaje de error si hay una validación fallida, o null si todo es válido.
+     */
     private fun areFieldsValid(): String? {
         if (_name.value.isBlank() || _lastname.value.isBlank() || _email.value.isBlank() || _password.value.isBlank()) {
             return "Todos los campos son obligatorios"
@@ -68,7 +98,10 @@ class RegisterViewModel(
         return null
     }
 
-
+    /**
+     * Ejecuta el proceso de registro validando los campos y llamando al caso de uso.
+     * Actualiza los estados con el resultado o error de la operación.
+     */
     fun register() {
         viewModelScope.launch {
             val validationError = areFieldsValid()
@@ -94,6 +127,4 @@ class RegisterViewModel(
             }
         }
     }
-
-
 }

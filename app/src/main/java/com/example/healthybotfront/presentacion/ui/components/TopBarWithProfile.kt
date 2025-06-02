@@ -13,6 +13,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.healthybotfront.presentacion.navigation.Screen
 
+/**
+ * Barra superior con título centrado, botón de retroceso a la izquierda (opcional)
+ * y botón de perfil a la derecha que navega a la pantalla de perfil del usuario.
+ *
+ * @param navController Controlador de navegación para manejar las acciones de los botones.
+ * @param userId Id del usuario usado para construir la ruta del perfil.
+ * @param title Texto que se muestra en el centro de la barra.
+ * @param showBackButton Indica si se muestra el botón de retroceso (por defecto es true).
+ */
 @Composable
 fun TopBarWithProfile(
     navController: NavController,
