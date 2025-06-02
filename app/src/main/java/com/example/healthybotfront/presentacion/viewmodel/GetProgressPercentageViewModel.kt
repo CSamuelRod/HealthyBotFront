@@ -7,6 +7,7 @@ import com.example.healthybotfront.domain.usecase.progressUseCases.GetProgressPe
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class GetProgressPercentageViewModel(
     private val getProgressPercentageByUserUseCase: GetProgressPercentageByUserUseCase
@@ -23,8 +24,15 @@ class GetProgressPercentageViewModel(
             try {
                 _percentage.value = getProgressPercentageByUserUseCase(userId)
                 _error.value = null
+            } catch (e: HttpException) {
+                if (e.code() == 404) {
+                    _percentage.value = emptyList() // Sin progreso disponible
+                    _error.value = null // No mostramos error al usuario
+                } else {
+                    _error.value = "Error al obtener progreso: ${e.message()}"
+                }
             } catch (e: Exception) {
-                _error.value = e.message ?: "Error desconocido"
+                _error.value = "Error desconocido: ${e.message}"
             }
         }
     }

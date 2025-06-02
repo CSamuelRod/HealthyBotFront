@@ -30,7 +30,8 @@ fun UpdateUserScreen(
     var name by remember { mutableStateOf(TextFieldValue("")) }
     var lastName by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
-
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    val updateSuccess by viewModel.updateSuccess.collectAsState()
     LaunchedEffect(userId) {
         viewModel.loadUser(userId)
     }
@@ -40,6 +41,12 @@ fun UpdateUserScreen(
             name = TextFieldValue(it.name)
             lastName = TextFieldValue(it.lastName)
             email = TextFieldValue(it.email)
+        }
+    }
+    LaunchedEffect(updateSuccess) {
+        if (updateSuccess) {
+            navController.popBackStack()
+            viewModel.resetUpdateSuccess() // reseteamos para no volver a navegar automáticamente
         }
     }
 
@@ -143,12 +150,19 @@ fun UpdateUserScreen(
                                     registrationDate = null
                                 )
                                 viewModel.updateUser(userId, updatedUser)
-                                navController.popBackStack()
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = darkColor)
                         ) {
                             Text("Guardar Cambios", color = Color.White)
+                        }
+
+                        if (errorMessage != null) {
+                            Text(
+                                text = errorMessage!!,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
                         }
                     }
                 }
