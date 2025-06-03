@@ -15,6 +15,8 @@ val retrofitModule = module {
         Retrofit.Builder()
             // Se configura la URL del servicio REST
             .baseUrl("http://10.0.2.2:8080")
+            //local spring boot
+            //.baseUrl("https://healthybot-production.up.railway.app/")
             // Se configura la serialización con JSON
             .addConverterFactory(GsonConverterFactory.create())
             .build()
