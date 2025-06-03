@@ -16,42 +16,55 @@ class ForgotPasswordViewModel(
     private val resetPasswordUseCase: ResetPasswordUseCase
 ) : ViewModel() {
 
-    /** Estado que mantiene el email ingresado por el usuario */
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email
 
-    /** Estado que mantiene la nueva contraseña ingresada por el usuario */
     private val _newPassword = MutableStateFlow("")
     val newPassword: StateFlow<String> = _newPassword
 
-    /** Estado que mantiene el mensaje de resultado de la operación */
     private val _message = MutableStateFlow("")
     val message: StateFlow<String> = _message
 
-    /**
-     * Actualiza el valor del email.
-     *
-     * @param value Nuevo email ingresado.
-     */
     fun setEmail(value: String) {
         _email.value = value
     }
 
-    /**
-     * Actualiza el valor de la nueva contraseña.
-     *
-     * @param value Nueva contraseña ingresada.
-     */
     fun setNewPassword(value: String) {
         _newPassword.value = value
     }
 
     /**
+     * Valida que la nueva contraseña cumpla con los requisitos.
+     *
+     * @return Mensaje de error si es inválida, o null si es válida.
+     */
+    private fun isPasswordValid(password: String): String? {
+        if (password.length < 6) {
+            return "La contraseña debe tener al menos 6 caracteres"
+        }
+
+        if (!Regex(".*[A-Za-z].*").containsMatchIn(password) ||
+            !Regex(".*[0-9].*").containsMatchIn(password)) {
+            return "La contraseña debe contener letras y números"
+        }
+
+        return null
+    }
+
+    /**
      * Ejecuta la lógica para resetear la contraseña utilizando el caso de uso.
-     * Actualiza el mensaje con el resultado de la operación.
+     * Aplica validaciones antes de enviar la solicitud.
      */
     fun resetPassword() {
         viewModelScope.launch {
+            val validationError = isPasswordValid(_newPassword.value)
+            if (validationError != null) {
+                _message.value = "Error: $validationError"
+            // Si la contraseña no cumple los requisitos, se muestra un error
+            // y se detiene la ejecución de esta operación sin seguir al siguiente paso.
+                return@launch
+            }
+
             try {
                 val response = resetPasswordUseCase(_email.value, _newPassword.value)
                 if (response.email == "email no encontrado") {
@@ -64,5 +77,4 @@ class ForgotPasswordViewModel(
             }
         }
     }
-
 }
