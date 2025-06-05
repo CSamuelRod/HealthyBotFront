@@ -86,7 +86,9 @@ fun LoginScreen(
 // Cambia el color de los iconos en los TextFields:
                     OutlinedTextField(
                         value = email,
-                        onValueChange = viewModel::setEmail,
+                        onValueChange = { newEmail ->
+                            viewModel.setEmail(newEmail)
+                        },
                         label = { Text("Correo electrónico") },
                         leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = AccentColor) },  // <-- AccentColor
                         colors = OutlinedTextFieldDefaults.colors(
@@ -100,7 +102,9 @@ fun LoginScreen(
 
                     OutlinedTextField(
                         value = password,
-                        onValueChange = viewModel::setPassword,
+                        onValueChange = { newPassword ->
+                            viewModel.setPassword(newPassword)
+                        },
                         label = { Text("Contraseña") },
                         leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = AccentColor) },  // <-- AccentColor
                         visualTransformation = PasswordVisualTransformation(),
